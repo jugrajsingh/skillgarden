@@ -55,21 +55,22 @@ description: Short description
 argument-hint: "<arg>"
 ---
 
-# This command MUST invoke the `plugin-my-skill` skill.
-Pass the user request to the skill.
+Invoke the `plugin:my-command` skill and follow it exactly.
 ```
 
-**Skill** (`skills/my-skill/SKILL.md`):
+**Skill** (`skills/my-command/SKILL.md`):
 
 ```yaml
 ---
-name: plugin-my-skill
+name: my-command
 description: Detailed description of what this skill does
 ---
 
 # Skill Title
 [Workflow logic - keep under 500 lines, use references/ for overflow]
 ```
+
+**CRITICAL:** Use colon notation (`plugin:skill`) in command invocation, NOT hyphen (`plugin-skill`). The skill's `name` field should be simple (no prefix), but the command references it with namespace.
 
 ### Environment Variables
 
@@ -147,6 +148,55 @@ When bumping, update:
 
 - `.claude-plugin/marketplace.json` → plugin version
 - `plugins/<plugin>/.claude-plugin/plugin.json` → version
+
+## Gotchas
+
+### Backticks in Skill Files
+
+**CRITICAL:** Avoid backticks around special characters in SKILL.md files.
+
+Claude Code parses skill content for permission patterns. Backticks containing `!`, `*`, or other shell metacharacters trigger false permission check failures.
+
+```markdown
+# WRONG - causes "permission check failed" error
+- Breaking changes (`!` or `BREAKING CHANGE`)
+- Wildcards like `*.py`
+
+# CORRECT - no backticks around special chars
+- Breaking changes (! suffix or BREAKING CHANGE footer)
+- Wildcards like *.py
+```
+
+**Symptoms:** `Bash command permission check failed for pattern "!` or `"` when loading skill.
+
+**Fix:** Remove backticks around `!`, `*`, `?`, and other shell metacharacters in skill prose.
+
+### disable-model-invocation with Same Names
+
+When command and skill have the **same namespaced name**, `disable-model-invocation: true` on the command blocks skill invocation.
+
+**How it happens:**
+
+| Component | Name | Namespaced |
+|-----------|------|------------|
+| Command | `plugin:deploy` | `plugin:deploy` |
+| Skill | `deploy` | `plugin:deploy` (auto-namespaced) |
+
+When command says "Invoke the `plugin:deploy` skill", Claude's Skill tool finds the **command** (same name), not the skill. If command has `disable-model-invocation: true` → blocked.
+
+**Symptoms:** `Skill X cannot be used with Skill tool due to disable-model-invocation`
+
+**Solutions:**
+
+1. **Don't use `disable-model-invocation`** when command and skill share the same name
+2. **Use different names** (like superpowers-agent-skills):
+   - Command: `write-plan` → invokes `plugin:writing-plans`
+   - Skill: `writing-plans` (different from command filename)
+
+**When you CAN use `disable-model-invocation: true`:**
+
+- Command and skill have **different** names
+- Or skill is self-contained (no delegation)
 
 ## Editing Rules
 
