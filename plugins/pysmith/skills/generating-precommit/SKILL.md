@@ -68,117 +68,17 @@ Tools ruff replaces:
 
 ### 2. Generate .pre-commit-config.yaml
 
-```yaml
-# Pre-commit hooks configuration
-# Install: pre-commit install
-# Run all: pre-commit run --all-files
-# Update:  pre-commit autoupdate
+Read the base config from `references/pre-commit-base.yaml` and use it as the starting template.
 
-minimum_pre_commit_version: 3.6.0
-fail_fast: true
-exclude: '^(\.git|\.venv|build|dist|node_modules|\.idea)'
+**Customizations to apply based on project context:**
 
-repos:
-  # ============================================================
-  # SECURITY (External tools - not covered by ruff)
-  # ============================================================
+- If no `chart/` directory, remove the `exclude: '^chart/templates/'` from check-yaml
+- If project uses markdown files, uncomment the markdownlint section
+- If project uses Makefiles, uncomment the mbake section
+- If project uses Docker, uncomment the hadolint section
+- If project has strict typing, uncomment the mypy section
 
-  # Detect secrets, API keys, credentials in any file type
-  - repo: https://github.com/gitleaks/gitleaks
-    rev: v8.21.2
-    hooks:
-      - id: gitleaks
-
-  # Scan dependencies for known vulnerabilities
-  - repo: https://github.com/pypa/pip-audit
-    rev: v2.7.3
-    hooks:
-      - id: pip-audit
-        args: ["--desc", "--format=columns"]
-
-  # ============================================================
-  # STANDARD CHECKS
-  # ============================================================
-
-  - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v5.0.0
-    hooks:
-      # Security
-      - id: detect-private-key
-      - id: check-added-large-files
-        args: ["--maxkb=1000"]
-
-      # Branch protection
-      - id: no-commit-to-branch
-        args:
-          - --branch=main
-          - --branch=develop
-
-      # Python validation
-      - id: check-ast
-      - id: debug-statements
-
-      # File format validation
-      - id: check-yaml
-        exclude: '^chart/templates/'
-      - id: check-json
-      - id: check-toml
-
-      # Git hygiene
-      - id: check-merge-conflict
-      - id: check-case-conflict
-
-      # Whitespace (auto-fix)
-      - id: end-of-file-fixer
-      - id: trailing-whitespace
-      - id: mixed-line-ending
-        args: ["--fix=lf"]
-
-  # ============================================================
-  # PYTHON: RUFF (replaces black, isort, flake8, bandit, autopep8)
-  # ============================================================
-
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.8.6
-    hooks:
-      # Linting with auto-fix (includes security S rules)
-      - id: ruff
-        args: ["--fix"]
-      # Formatting (replaces black)
-      - id: ruff-format
-```
-
-### 3. Optional Additions
-
-**Typo detection (recommended for docs-heavy projects):**
-
-```yaml
-  - repo: https://github.com/codespell-project/codespell
-    rev: v2.3.0
-    hooks:
-      - id: codespell
-        args: ["--skip", "*.lock,*.svg"]
-```
-
-**Markdown linting (if .md files present):**
-
-```yaml
-  - repo: https://github.com/igorshubovych/markdownlint-cli
-    rev: v0.42.0
-    hooks:
-      - id: markdownlint
-        args: ["--fix"]
-```
-
-**Type checking (for strict type safety):**
-
-```yaml
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.13.0
-    hooks:
-      - id: mypy
-        additional_dependencies: [types-all]
-```
+Copy the base config to `.pre-commit-config.yaml` with applicable sections uncommented.
 
 ### 4. Report
 

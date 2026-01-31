@@ -27,6 +27,12 @@ repos:
         args:
           - --maxkb=500
       - id: check-merge-conflict
+      - id: no-commit-to-branch          # Protect main/develop branches
+        args:
+          - --branch
+          - main
+          - --branch
+          - develop
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.8.6
