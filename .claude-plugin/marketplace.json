@@ -68,6 +68,54 @@
       },
       "category": "debugging",
       "tags": ["debugging", "error-escalation", "rca", "root-cause-analysis", "troubleshooting"]
+    },
+    {
+      "name": "planner",
+      "source": "./plugins/planner",
+      "description": "Design brainstorming, implementation planning with 3-file persistence, session recovery, handoff, and worktree isolation",
+      "version": "0.1.0",
+      "author": {
+        "name": "Jugraj Singh",
+        "email": "jugrajskhalsa@gmail.com"
+      },
+      "category": "planning",
+      "tags": ["planning", "brainstorming", "persistence", "session-recovery", "handoff", "worktrees"]
+    },
+    {
+      "name": "researcher",
+      "source": "./plugins/researcher",
+      "description": "Parallel sub-agent research with persistent reports, evidence-backed analysis, and generic dispatch",
+      "version": "0.1.0",
+      "author": {
+        "name": "Jugraj Singh",
+        "email": "jugrajskhalsa@gmail.com"
+      },
+      "category": "research",
+      "tags": ["research", "analysis", "parallel-agents", "codebase-analysis", "reports"]
+    },
+    {
+      "name": "tidyup",
+      "source": "./plugins/tidyup",
+      "description": "Codebase cleanup and hygiene - dead code detection, duplication scan, staleness check, safe removal with archiving",
+      "version": "0.1.0",
+      "author": {
+        "name": "Jugraj Singh",
+        "email": "jugrajskhalsa@gmail.com"
+      },
+      "category": "maintenance",
+      "tags": ["cleanup", "dead-code", "hygiene", "maintenance", "refactoring"]
+    },
+    {
+      "name": "shipit",
+      "source": "./plugins/shipit",
+      "description": "Batch execution with subagent pipeline, TDD enforcement, code review, verification gate, PR description, and branch completion",
+      "version": "0.1.0",
+      "author": {
+        "name": "Jugraj Singh",
+        "email": "jugrajskhalsa@gmail.com"
+      },
+      "category": "execution",
+      "tags": ["execution", "tdd", "code-review", "verification", "shipping", "pull-request", "subagents"]
     }
   ]
 }
