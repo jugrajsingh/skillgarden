@@ -56,6 +56,18 @@
       },
       "category": "productivity",
       "tags": ["claude-md", "context", "documentation", "memory", "optimization", "rules"]
+    },
+    {
+      "name": "unstuck",
+      "source": "./plugins/unstuck",
+      "description": "Structured error escalation protocol - diagnose, pivot, rethink, escalate when stuck on a problem",
+      "version": "0.1.0",
+      "author": {
+        "name": "Jugraj Singh",
+        "email": "jugrajskhalsa@gmail.com"
+      },
+      "category": "debugging",
+      "tags": ["debugging", "error-escalation", "rca", "root-cause-analysis", "troubleshooting"]
     }
   ]
 }
