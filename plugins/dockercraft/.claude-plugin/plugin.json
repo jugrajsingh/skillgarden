@@ -1,0 +1,12 @@
+{
+  "name": "dockercraft",
+  "version": "0.1.0",
+  "description": "Docker best practices: language-aware Dockerfile generation, compose orchestration, security auditing, and image optimization",
+  "author": {
+    "name": "Jugraj Singh",
+    "email": "jugrajskhalsa@gmail.com"
+  },
+  "repository": "https://github.com/jugrajsingh/skillgarden",
+  "license": "MIT",
+  "keywords": ["docker", "dockerfile", "compose", "multi-stage", "security", "optimization", "hadolint"]
+}
