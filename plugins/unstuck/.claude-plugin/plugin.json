@@ -1,0 +1,12 @@
+{
+  "name": "unstuck",
+  "version": "0.1.0",
+  "description": "Structured error escalation protocol - diagnose, pivot, rethink, escalate when stuck on a problem",
+  "author": {
+    "name": "Jugraj Singh",
+    "email": "jugrajskhalsa@gmail.com"
+  },
+  "repository": "https://github.com/jugrajsingh/skillgarden",
+  "license": "MIT",
+  "keywords": ["debugging", "error-escalation", "rca", "root-cause-analysis", "troubleshooting"]
+}
