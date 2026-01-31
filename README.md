@@ -1,30 +1,18 @@
 # SkillGarden
 
-A plugin marketplace for Claude Code that brings discipline to your git workflow. No more accidental wildcard commits, no more forgotten conventional commit formats, no more AI footers cluttering your history.
-
-## How It Works
-
-SkillGarden plugins use **hooks** to enforce best practices automatically. When you try to `git add .` or commit with a bad message, the hook catches it *before* execution and guides you to the right approach.
-
-The magic is in the combination:
-
-- **PreToolUse hooks** intercept commands before they run
-- **Skills** provide guided workflows with user confirmation
-- **Commands** give you quick access via `/plugin:command`
-
-You don't need to remember the rules. The plugins remember for you.
+A plugin marketplace for Claude Code that brings developer best practices as composable plugins. Install what you need, they work together seamlessly.
 
 ## Available Plugins
 
 ### gitmastery
 
-Git workflow validation that actually works. Enforces explicit file staging, conventional commits, and blocks AI footers.
+Git workflow validation with enforcement. Explicit file staging, conventional commits, no AI footers.
 
-**What it blocks:**
+**What it enforces:**
 
-- `git add .` or `git add *.py` → "List files explicitly"
-- `git commit -m "fixed stuff"` → "Use conventional format: type(scope): subject"
-- AI footers like `Co-Authored-By: Claude` → Blocked automatically
+- `git add .` → Blocked. List files explicitly.
+- `git commit -m "fixed stuff"` → Blocked. Use `type(scope): subject`
+- AI footers → Blocked automatically
 
 **Commands:**
 
@@ -39,11 +27,13 @@ Git workflow validation that actually works. Enforces explicit file staging, con
 
 ### branch-guardian
 
-Enforces git-flow branch protection. Blocks direct commits to main/develop.
+Git-flow branch protection. Blocks direct commits to main/develop.
 
 ### docker-mastery
 
 Docker best practices: optimized Dockerfiles, multi-stage builds, compose configurations.
+
+*More plugins coming soon.*
 
 ## Installation
 
@@ -53,62 +43,46 @@ Add the marketplace:
 /plugin marketplace add jugrajsingh/skillgarden
 ```
 
-Install a plugin:
+Install plugins you need:
 
 ```bash
 /plugin install gitmastery@skillgarden
+/plugin install docker-mastery@skillgarden
 ```
 
-Verify it's working:
+Verify installation:
 
 ```bash
 /help
-# Should see: /gitmastery:commit, /gitmastery:feature, etc.
+# Should see plugin commands listed
 ```
 
 ## Quick Start
 
-After installing gitmastery, just use git normally. The hooks will guide you:
+After installing gitmastery, just work normally:
 
 ```bash
-# This gets blocked with helpful message:
+# This gets blocked:
 git add .
-# → "Git Add Blocked: '.' (current directory) not allowed. List files explicitly."
+# → "List files explicitly."
 
 # This works:
 git add src/auth.py src/utils.py
 
-# This gets blocked:
-git commit -m "fixed bug"
-# → "Git Commit Blocked: Not conventional format. Use: type(scope): subject"
-
-# This works:
-git commit -m "fix(auth): handle null token gracefully"
-```
-
-Or use the guided workflow:
-
-```bash
+# Or use the guided workflow:
 /gitmastery:commit
 # → Analyzes changes, groups logically, presents each commit for approval
 ```
 
 ## Philosophy
 
-- **Enforce, don't suggest** - Hooks block bad patterns before they happen
+- **Enforce, don't suggest** - Block bad patterns before they happen
 - **Guide, don't lecture** - Clear error messages with the fix
 - **Compose, don't monolith** - Small plugins that do one thing well
-- **Convention over configuration** - Sensible defaults that just work
 
 ## Contributing
 
-Want to add a plugin? See [CONTRIBUTING.md](CONTRIBUTING.md) for:
-
-- Git-flow workflow setup
-- Plugin structure requirements
-- Pre-commit hook configuration
-
-Skills live in `plugins/<name>/skills/`. Hooks live in `plugins/<name>/hooks/`.
+Want to add a plugin? See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup and guidelines.
 
 ## Updating
 
@@ -121,10 +95,6 @@ Or update all:
 ```bash
 /plugin marketplace update skillgarden
 ```
-
-## License
-
-MIT License - see LICENSE file for details.
 
 ## Support
 

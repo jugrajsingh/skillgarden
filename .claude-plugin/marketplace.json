@@ -44,6 +44,18 @@
       },
       "category": "git",
       "tags": ["git", "conventional-commits", "workflow", "validation", "hooks"]
+    },
+    {
+      "name": "claudemd",
+      "source": "./plugins/claudemd",
+      "description": "CLAUDE.md lifecycle management - init, audit, sync, and optimize project context files",
+      "version": "0.1.0",
+      "author": {
+        "name": "Jugraj Singh",
+        "email": "jugrajskhalsa@gmail.com"
+      },
+      "category": "productivity",
+      "tags": ["claude-md", "context", "documentation", "memory", "optimization", "rules"]
     }
   ]
 }
