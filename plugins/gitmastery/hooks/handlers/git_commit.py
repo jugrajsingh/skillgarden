@@ -43,15 +43,21 @@ def extract_commit_message(command: str) -> str | None:
     Returns:
         The commit message or None if not found
     """
-    # Match -m "message" or -m 'message'
-    match = re.search(r'-m\s+["\'](.+?)["\']', command)
-    if match:
-        return match.group(1)
-
-    # Match heredoc style: -m "$(cat <<'EOF' ... EOF)"
+    # Heredoc first - must check before simple pattern to avoid
+    # matching the ' in <<'EOF' as a closing quote delimiter
     match = re.search(
         r'-m\s+"\$\(cat\s+<<[\'"]?EOF[\'"]?\s*\n(.+?)\nEOF', command, re.DOTALL
     )
+    if match:
+        return match.group(1)
+
+    # Match -m "message" (including multiline bodies)
+    match = re.search(r'-m\s+"((?:[^"\\]|\\.)+)"', command, re.DOTALL)
+    if match:
+        return match.group(1)
+
+    # Match -m 'message' (including multiline bodies)
+    match = re.search(r"-m\s+'((?:[^'\\]|\\.)+)'", command, re.DOTALL)
     if match:
         return match.group(1)
 
@@ -67,8 +73,8 @@ def validate_conventional_commit(message: str) -> tuple[bool, str]:
     Returns:
         Tuple of (is_valid, error_message)
     """
-    # Pattern: type(scope): subject or type: subject
-    pattern = rf"^({'|'.join(COMMIT_TYPES)})(\(.+?\))?:\s+.+"
+    # Pattern: type(scope): subject or type: subject (! for breaking changes)
+    pattern = rf"^({'|'.join(COMMIT_TYPES)})(\(.+?\))?!?:\s+.+"
 
     first_line = message.split("\n")[0].strip()
 
