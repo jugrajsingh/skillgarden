@@ -25,6 +25,16 @@
         "name": "Jugraj Singh",
         "email": "jugrajskhalsa@gmail.com"
       }
+    },
+    {
+      "name": "gitmastery",
+      "description": "Git workflow validation - enforces explicit file staging, conventional commits, and blocks AI footers",
+      "version": "0.1.0",
+      "source": "./plugins/gitmastery",
+      "author": {
+        "name": "Jugraj Singh",
+        "email": "jugrajskhalsa@gmail.com"
+      }
     }
   ]
 }
