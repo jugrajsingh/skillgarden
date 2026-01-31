@@ -1,0 +1,12 @@
+{
+  "name": "tidyup",
+  "version": "0.1.0",
+  "description": "Codebase cleanup and hygiene — dead code detection, duplication scan, staleness check, safe removal with archiving",
+  "author": {
+    "name": "Jugraj Singh",
+    "email": "jugrajskhalsa@gmail.com"
+  },
+  "repository": "https://github.com/jugrajsingh/skillgarden",
+  "license": "MIT",
+  "keywords": ["cleanup", "dead-code", "hygiene", "maintenance", "refactoring"]
+}
