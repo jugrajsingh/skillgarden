@@ -1,0 +1,12 @@
+{
+  "name": "planner",
+  "version": "0.1.0",
+  "description": "Design brainstorming, implementation planning with 3-file persistence, session recovery, handoff, and worktree isolation",
+  "author": {
+    "name": "Jugraj Singh",
+    "email": "jugrajskhalsa@gmail.com"
+  },
+  "repository": "https://github.com/jugrajsingh/skillgarden",
+  "license": "MIT",
+  "keywords": ["planning", "brainstorming", "persistence", "session-recovery", "handoff", "worktrees"]
+}
