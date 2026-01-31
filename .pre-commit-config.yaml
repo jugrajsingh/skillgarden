@@ -45,6 +45,7 @@ repos:
           - --fix
           - --disable
           - MD013
+          - MD024
           - MD033
           - MD041
           - --
