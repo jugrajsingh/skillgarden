@@ -1,0 +1,12 @@
+{
+  "name": "shipit",
+  "version": "0.1.0",
+  "description": "Batch execution with subagent pipeline, TDD enforcement, code review, verification gate, PR description, and branch completion",
+  "author": {
+    "name": "Jugraj Singh",
+    "email": "jugrajskhalsa@gmail.com"
+  },
+  "repository": "https://github.com/jugrajsingh/skillgarden",
+  "license": "MIT",
+  "keywords": ["execution", "tdd", "code-review", "verification", "shipping", "pull-request", "subagents"]
+}
