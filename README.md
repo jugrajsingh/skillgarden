@@ -25,6 +25,29 @@ Git workflow validation with enforcement. Explicit file staging, conventional co
 | `/gitmastery:changelog` | Generate Keep a Changelog format |
 | `/gitmastery:init` | Initialize git-flow |
 
+### claudemd
+
+CLAUDE.md lifecycle management. Generate, audit, sync, and optimize hierarchical context files throughout a repository.
+
+**Commands:**
+
+| Command | Description |
+|---------|-------------|
+| `/claudemd:init` | Generate root + module-level CLAUDE.md files |
+| `/claudemd:audit` | Health check all context files for anti-patterns and staleness |
+| `/claudemd:sync` | Detect and fix drift between docs and codebase |
+| `/claudemd:optimize` | Reduce context cost while preserving signal |
+
+### unstuck
+
+Structured error escalation protocol. 3-strike workflow when stuck on a problem: diagnose, pivot, escalate.
+
+**Commands:**
+
+| Command | Description |
+|---------|-------------|
+| `/unstuck` | Start the escalation protocol |
+
 ### branch-guardian
 
 Git-flow branch protection. Blocks direct commits to main/develop.
@@ -32,8 +55,6 @@ Git-flow branch protection. Blocks direct commits to main/develop.
 ### docker-mastery
 
 Docker best practices: optimized Dockerfiles, multi-stage builds, compose configurations.
-
-*More plugins coming soon.*
 
 ## Installation
 
@@ -47,7 +68,8 @@ Install plugins you need:
 
 ```bash
 /plugin install gitmastery@skillgarden
-/plugin install docker-mastery@skillgarden
+/plugin install claudemd@skillgarden
+/plugin install unstuck@skillgarden
 ```
 
 Verify installation:
