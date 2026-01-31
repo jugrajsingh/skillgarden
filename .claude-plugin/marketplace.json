@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Claude Code plugin marketplace for git workflow validation, Docker best practices, and branch protection",
-    "version": "0.1.0"
+    "version": "0.2.0"
   },
   "plugins": [
     {
@@ -37,7 +37,7 @@
       "name": "gitmastery",
       "source": "./plugins/gitmastery",
       "description": "Git workflow validation - enforces explicit file staging, conventional commits, and blocks AI footers",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "author": {
         "name": "Jugraj Singh",
         "email": "jugrajskhalsa@gmail.com"
