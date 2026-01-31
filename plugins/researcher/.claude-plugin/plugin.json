@@ -1,0 +1,12 @@
+{
+  "name": "researcher",
+  "version": "0.1.0",
+  "description": "Parallel sub-agent research with persistent reports, evidence-backed analysis, and generic dispatch",
+  "author": {
+    "name": "Jugraj Singh",
+    "email": "jugrajskhalsa@gmail.com"
+  },
+  "repository": "https://github.com/jugrajsingh/skillgarden",
+  "license": "MIT",
+  "keywords": ["research", "analysis", "parallel-agents", "codebase-analysis", "reports"]
+}
