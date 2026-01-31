@@ -107,15 +107,59 @@ Batch execution with subagent pipeline, TDD enforcement, code review, verificati
 
 **Pipeline:** Each task goes through implementer → spec-reviewer → quality-reviewer agents. Uses Claude Code native Tasks for real-time coordination.
 
+### pysmith
+
+Python project scaffolding and best practices. Generate pyproject.toml, Pydantic Settings, pre-commit hooks, and audit existing projects.
+
+**Commands:**
+
+| Command | Description |
+|---------|-------------|
+| `/pysmith:setup` | Full Python dev environment (pyproject + settings + pre-commit + makefile) |
+| `/pysmith:pyproject` | Generate pyproject.toml with uv-native config |
+| `/pysmith:settings` | Generate Pydantic Settings + YAML configuration |
+| `/pysmith:precommit` | Generate .pre-commit-config.yaml with security hooks |
+| `/pysmith:patterns` | Browse 9 copy-paste Python code patterns |
+| `/pysmith:audit` | Audit project against Python best practices |
+
+### makesmith
+
+Makefile generation for development and deployment. Supports role-separated Makefiles with self-documenting targets.
+
+**Commands:**
+
+| Command | Description |
+|---------|-------------|
+| `/makesmith:local` | Generate Makefile.local with dev targets (venv, test, lint) |
+| `/makesmith:deploy` | Generate Makefile.deploy with DevOps targets (build, push, deploy) |
+| `/makesmith:makefile` | Generate root Makefile that delegates to local/deploy |
+| `/makesmith:audit` | Audit Makefiles against conventions |
+| `/makesmith:precommit` | Generate mbake pre-commit hook |
+
+### dockercraft
+
+Docker best practices with language-aware generation. Supports Python, Node.js, Go, Rust, Java with multi-stage builds, compose orchestration, and security auditing.
+
+**Commands:**
+
+| Command | Description |
+|---------|-------------|
+| `/dockercraft:setup` | Full Docker environment (Dockerfile + compose + services) |
+| `/dockercraft:dockerfile` | Generate optimized Dockerfile with language detection |
+| `/dockercraft:compose` | Generate docker-compose.yml with service detection |
+| `/dockercraft:audit` | Audit Dockerfile and compose against security checklist |
+| `/dockercraft:optimize` | Analyze and optimize Docker image size |
+| `/dockercraft:precommit` | Generate hadolint pre-commit hook |
+
+**Agent:** dockerfile-reviewer (sonnet, security + performance review with severity grading).
+
 ### branch-guardian
 
 Git-flow branch protection. Blocks direct commits to main/develop.
 
-### docker-mastery
+## Cross-Plugin Workflows
 
-Docker best practices: optimized Dockerfiles, multi-stage builds, compose configurations.
-
-## Cross-Plugin Workflow
+### Planning and Execution
 
 ```text
 Idea -> /planner:brainstorm       -> design doc
@@ -125,6 +169,24 @@ Idea -> /planner:brainstorm       -> design doc
      -> /shipit:verify            -> evidence gate
      -> /shipit:review            -> comprehensive code review
      -> /shipit:ship              -> merge, PR, keep, or discard
+```
+
+### Python Project Setup
+
+```text
+/pysmith:setup
+  -> generates pyproject.toml, config/settings.py, .pre-commit-config.yaml
+  -> delegates to /makesmith:local for Makefile.local
+  -> runs make -f Makefile.local setup-local
+
+/dockercraft:setup
+  -> generates Dockerfile, .dockerignore
+  -> generates docker-compose.yml
+  -> optionally starts services
+
+/makesmith:deploy
+  -> generates Makefile.deploy with Docker build/push/deploy
+  -> references Dockerfile built by dockercraft
 ```
 
 Session recovery: `/planner:resume` reads persistence files and rebuilds context.
@@ -149,6 +211,9 @@ Install plugins you need:
 /plugin install researcher@skillgarden
 /plugin install tidyup@skillgarden
 /plugin install shipit@skillgarden
+/plugin install pysmith@skillgarden
+/plugin install makesmith@skillgarden
+/plugin install dockercraft@skillgarden
 ```
 
 Verify installation:

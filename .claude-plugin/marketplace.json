@@ -5,8 +5,8 @@
     "email": "jugrajskhalsa@gmail.com"
   },
   "metadata": {
-    "description": "Claude Code plugin marketplace for git workflow validation, Docker best practices, and branch protection",
-    "version": "0.2.0"
+    "description": "Claude Code plugin marketplace for developer best practices, git workflow validation, and project scaffolding",
+    "version": "0.3.0"
   },
   "plugins": [
     {
@@ -22,16 +22,40 @@
       "tags": ["git", "branch-protection", "git-flow"]
     },
     {
-      "name": "docker-mastery",
-      "source": "./plugins/docker-mastery",
-      "description": "Docker best practices: optimized Dockerfiles, multi-stage builds, compose configurations",
+      "name": "pysmith",
+      "source": "./plugins/pysmith",
+      "description": "Python project scaffolding, configuration management, and best practices auditing with uv-native tooling",
+      "version": "0.1.0",
+      "author": {
+        "name": "Jugraj Singh",
+        "email": "jugrajskhalsa@gmail.com"
+      },
+      "category": "python",
+      "tags": ["python", "pyproject", "pydantic-settings", "pre-commit", "ruff", "uv", "audit"]
+    },
+    {
+      "name": "makesmith",
+      "source": "./plugins/makesmith",
+      "description": "Makefile generation for local development, deployment, and root orchestration with audit capabilities",
+      "version": "0.1.0",
+      "author": {
+        "name": "Jugraj Singh",
+        "email": "jugrajskhalsa@gmail.com"
+      },
+      "category": "devops",
+      "tags": ["makefile", "make", "devops", "docker", "helm", "deployment", "local-dev"]
+    },
+    {
+      "name": "dockercraft",
+      "source": "./plugins/dockercraft",
+      "description": "Docker best practices: language-aware Dockerfile generation, compose orchestration, security auditing, and image optimization",
       "version": "0.1.0",
       "author": {
         "name": "Jugraj Singh",
         "email": "jugrajskhalsa@gmail.com"
       },
       "category": "docker",
-      "tags": ["docker", "dockerfile", "compose", "best-practices"]
+      "tags": ["docker", "dockerfile", "compose", "multi-stage", "security", "optimization", "hadolint"]
     },
     {
       "name": "gitmastery",
