@@ -1,0 +1,30 @@
+{
+  "name": "skillgarden",
+  "description": "Multi-plugin marketplace for Docker best practices with enforced git-flow branch protection",
+  "owner": {
+    "name": "Jugraj Singh",
+    "email": "jugrajskhalsa@gmail.com"
+  },
+  "plugins": [
+    {
+      "name": "branch-guardian",
+      "description": "Enforces git-flow branch protection - blocks direct commits to main/develop",
+      "version": "0.1.0",
+      "source": "./plugins/branch-guardian",
+      "author": {
+        "name": "Jugraj Singh",
+        "email": "jugrajskhalsa@gmail.com"
+      }
+    },
+    {
+      "name": "docker-mastery",
+      "description": "Docker best practices: optimized Dockerfiles, multi-stage builds, compose configurations",
+      "version": "0.1.0",
+      "source": "./plugins/docker-mastery",
+      "author": {
+        "name": "Jugraj Singh",
+        "email": "jugrajskhalsa@gmail.com"
+      }
+    }
+  ]
+}

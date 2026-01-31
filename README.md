@@ -1,8 +1,8 @@
 # SkillGarden
 
-**Multi-plugin marketplace for Claude Code with enforced git-flow workflow.**
+**Multi-plugin marketplace for Claude Code skills and tools.**
 
-SkillGarden is a collection of Claude Code agent plugins focused on Docker best practices and containerization workflows. All plugins enforce strict branch protection - direct commits to `main` and `develop` are blocked.
+SkillGarden is a collection of Claude Code plugins for skills and tools I use in day-to-day development. This repository follows git-flow workflow with branch protection enforced via pre-commit hooks.
 
 ## Plugins
 
@@ -52,7 +52,6 @@ skillgarden/
 │       │   └── plugin.json
 │       ├── commands/
 │       └── skills/
-├── rules/                        # Shared coding standards
 └── README.md
 ```
 
