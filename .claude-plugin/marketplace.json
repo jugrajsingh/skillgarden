@@ -1,40 +1,49 @@
 {
   "name": "skillgarden",
-  "description": "Multi-plugin marketplace for Docker best practices with enforced git-flow branch protection",
   "owner": {
     "name": "Jugraj Singh",
     "email": "jugrajskhalsa@gmail.com"
   },
+  "metadata": {
+    "description": "Claude Code plugin marketplace for git workflow validation, Docker best practices, and branch protection",
+    "version": "0.1.0"
+  },
   "plugins": [
     {
       "name": "branch-guardian",
+      "source": "./plugins/branch-guardian",
       "description": "Enforces git-flow branch protection - blocks direct commits to main/develop",
       "version": "0.1.0",
-      "source": "./plugins/branch-guardian",
       "author": {
         "name": "Jugraj Singh",
         "email": "jugrajskhalsa@gmail.com"
-      }
+      },
+      "category": "git",
+      "tags": ["git", "branch-protection", "git-flow"]
     },
     {
       "name": "docker-mastery",
+      "source": "./plugins/docker-mastery",
       "description": "Docker best practices: optimized Dockerfiles, multi-stage builds, compose configurations",
       "version": "0.1.0",
-      "source": "./plugins/docker-mastery",
       "author": {
         "name": "Jugraj Singh",
         "email": "jugrajskhalsa@gmail.com"
-      }
+      },
+      "category": "docker",
+      "tags": ["docker", "dockerfile", "compose", "best-practices"]
     },
     {
       "name": "gitmastery",
+      "source": "./plugins/gitmastery",
       "description": "Git workflow validation - enforces explicit file staging, conventional commits, and blocks AI footers",
       "version": "0.1.0",
-      "source": "./plugins/gitmastery",
       "author": {
         "name": "Jugraj Singh",
         "email": "jugrajskhalsa@gmail.com"
-      }
+      },
+      "category": "git",
+      "tags": ["git", "conventional-commits", "workflow", "validation", "hooks"]
     }
   ]
 }
