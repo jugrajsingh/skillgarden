@@ -1,0 +1,12 @@
+{
+  "name": "gitmastery",
+  "version": "0.1.0",
+  "description": "Git workflow validation - enforces explicit file staging, conventional commits, and blocks AI footers",
+  "author": {
+    "name": "Jugraj Singh",
+    "email": "jugrajskhalsa@gmail.com"
+  },
+  "repository": "https://github.com/jugrajsingh/skillgarden",
+  "license": "MIT",
+  "keywords": ["git", "workflow", "validation", "conventional-commits", "hooks"]
+}
