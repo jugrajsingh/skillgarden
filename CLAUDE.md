@@ -144,6 +144,26 @@ This project uses git-flow-next. All development follows:
 - Explicit file paths: No `git add .` or wildcards
 - No AI footers: Never "Co-Authored-By: Claude"
 
+## Pre-commit Hooks
+
+Hooks run with `fail_fast: false` — all hooks execute before failing. This allows auto-fixers to modify files in one pass.
+
+**Hook order:**
+
+1. Security (gitleaks, detect-private-key)
+2. Formatting & linting (trailing-whitespace, end-of-file-fixer, ruff, markdownlint)
+3. Validation (check-yaml, check-json, check-added-large-files, check-merge-conflict)
+4. Conventional commits (commit-msg stage)
+
+**Workflow when hooks modify files:**
+
+```bash
+git commit -m "feat: my change"    # Hooks run, some fix files
+# If hooks modified files, commit fails
+git add <fixed-files>              # Re-stage the auto-fixed files
+git commit -m "feat: my change"    # Retry commit
+```
+
 ## Versioning
 
 Use semver. Bump version when skill/agent/command files change:
