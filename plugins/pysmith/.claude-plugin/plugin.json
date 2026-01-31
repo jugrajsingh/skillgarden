@@ -1,0 +1,12 @@
+{
+  "name": "pysmith",
+  "version": "0.1.0",
+  "description": "Python project scaffolding, configuration management, and best practices auditing with uv-native tooling",
+  "author": {
+    "name": "Jugraj Singh",
+    "email": "jugrajskhalsa@gmail.com"
+  },
+  "repository": "https://github.com/jugrajsingh/skillgarden",
+  "license": "MIT",
+  "keywords": ["python", "pyproject", "pydantic-settings", "pre-commit", "ruff", "uv", "audit"]
+}
