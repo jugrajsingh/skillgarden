@@ -5,6 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - 2026-02-01
+
+### Added
+
+- grepai plugin for semantic code search setup, initialization, and health monitoring
+  - Commands: /grepai:setup, /grepai:init, /grepai:status
+  - Skills: setting-up (9-step guided orchestrator), initializing (config generation), checking-status (health diagnostics)
+  - Docker Compose template with Ollama for embeddings
+  - Embedding provider selection (Ollama/OpenAI) with model choices
+  - Storage backend selection (GOB default, PostgreSQL optional)
+  - MCP server registration (global or project scope)
+- Root docker-compose.yml for grepai Ollama infrastructure
+- Inspiration submodules for grepai-skills and superpowers-agent-skills
+
+### Fixed
+
+- grepai plugin defaults to GOB storage instead of PostgreSQL due to pgvector UTF-8 chunking bug (yoanbernabeu/grepai#96)
+
+### Changed
+
+- grepai plugin defaults to nomic-embed-text (768 dims, 274MB) over mxbai-embed-large for faster setup
+
 ## [0.3.0] - 2026-02-01
 
 ### Added
