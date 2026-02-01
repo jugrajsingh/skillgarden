@@ -128,8 +128,8 @@ Present via AskUserQuestion based on chosen provider.
 ```text
 Which embedding model?
 
-○ mxbai-embed-large — 1024 dims, 670MB, highest accuracy (Recommended)
-○ nomic-embed-text — 768 dims, 274MB, fast general use
+○ nomic-embed-text — 768 dims, 274MB, fast general use (Recommended)
+○ mxbai-embed-large — 1024 dims, 670MB, highest accuracy
 ○ bge-m3 — 1024 dims, 1.2GB, multilingual
 ○ nomic-embed-text-v2-moe — 768 dims, 500MB, multilingual MoE
 ```
@@ -165,17 +165,21 @@ Present via AskUserQuestion:
 ```text
 Which storage backend?
 
-○ PostgreSQL + pgvector — scalable, concurrent, team-ready (Recommended)
-○ GOB (local file) — simple, zero config, single-machine only
+○ GOB (local file) — simple, zero config, grepai default (Recommended)
+○ PostgreSQL + pgvector — scalable, concurrent, team-ready
 ```
 
-If **PostgreSQL**: already configured in docker-compose. Note the DSN:
+If **GOB**: default storage, no extra config needed. Index stored in `.grepai/index.gob`.
+
+If **PostgreSQL**: add postgres service to docker-compose and note the DSN:
 
 ```text
 DSN: postgres://grepai:grepai@localhost:5432/grepai
 ```
 
-If **GOB**: default storage, no extra config needed.
+**Known issue:** PostgreSQL + pgvector has a UTF-8 encoding bug where files
+containing Unicode box-drawing characters (e.g. ═, ╔) fail to index. GOB
+does not have this limitation.
 
 ## Step 6: Initialize grepai
 
@@ -249,7 +253,7 @@ GrepAI Setup Complete
 Infrastructure:
   ✓ Docker Compose      {COMPOSE_PATH}
   ✓ Ollama              http://localhost:11434
-  ✓ PostgreSQL/pgvector  localhost:5432 (skip if GOB)
+  ✓ PostgreSQL/pgvector  localhost:5432 (only if postgres backend)
 
 Embedding:
   ✓ Provider   {PROVIDER}

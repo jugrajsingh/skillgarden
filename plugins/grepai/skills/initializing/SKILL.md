@@ -67,26 +67,7 @@ Read: .grepai/config.yaml
 
 Overwrite `.grepai/config.yaml` with the chosen settings.
 
-**For Ollama + PostgreSQL (most common):**
-
-```yaml
-embedder:
-  provider: ollama
-  model: {MODEL}
-  endpoint: http://localhost:11434
-  dimensions: {DIMS}
-store:
-  backend: postgres
-  postgres:
-    dsn: postgres://grepai:grepai@localhost:5432/grepai
-chunking:
-  max_tokens: 512
-  overlap: 50
-trace:
-  enabled: true
-```
-
-**For Ollama + GOB:**
+**For Ollama + GOB (most common):**
 
 ```yaml
 embedder:
@@ -96,24 +77,6 @@ embedder:
   dimensions: {DIMS}
 store:
   backend: gob
-chunking:
-  max_tokens: 512
-  overlap: 50
-trace:
-  enabled: true
-```
-
-**For OpenAI + PostgreSQL:**
-
-```yaml
-embedder:
-  provider: openai
-  model: {MODEL}
-  dimensions: {DIMS}
-store:
-  backend: postgres
-  postgres:
-    dsn: postgres://grepai:grepai@localhost:5432/grepai
 chunking:
   max_tokens: 512
   overlap: 50
@@ -136,6 +99,19 @@ chunking:
 trace:
   enabled: true
 ```
+
+**For PostgreSQL backends**, replace the store section:
+
+```yaml
+store:
+  backend: postgres
+  postgres:
+    dsn: postgres://grepai:grepai@localhost:5432/grepai
+```
+
+**Known issue:** PostgreSQL + pgvector has a UTF-8 encoding bug where files
+containing Unicode box-drawing characters (e.g. U+2550 ═) fail to index.
+GOB does not have this limitation.
 
 ### Dimension Reference
 

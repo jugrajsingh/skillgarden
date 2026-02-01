@@ -108,11 +108,11 @@ GrepAI Health Check
 ============================================================================
 
 Infrastructure:
-  {S} Docker           ollama: {STATUS}, grepai-postgres: {STATUS}
+  {S} Docker           ollama: {STATUS}
   {S} Ollama           http://localhost:11434 — {STATUS}
   {S} Models           {MODEL_LIST} (or "none pulled")
-  {S} PostgreSQL       {STATUS} (or "skipped — GOB backend")
-  {S} pgvector         {STATUS} (or "skipped — GOB backend")
+  {S} PostgreSQL       {STATUS} (only if postgres backend, otherwise "skipped — GOB")
+  {S} pgvector         {STATUS} (only if postgres backend, otherwise "skipped — GOB")
 
 Configuration:
   {S} Config           .grepai/config.yaml — {PROVIDER}/{MODEL}
@@ -140,7 +140,7 @@ After the report, if any component shows ✗, print targeted fix suggestions:
 |-----------|-----|
 | Docker not running | `docker compose up -d` or start Docker Desktop |
 | Ollama unreachable | `docker start ollama` then wait 5s |
-| No embedding models | `docker exec ollama ollama pull mxbai-embed-large` |
+| No embedding models | `docker exec ollama ollama pull nomic-embed-text` |
 | PostgreSQL down | `docker start grepai-postgres` |
 | pgvector missing | Extensions auto-install on first grepai index |
 | No config | Run `/grepai:init` to initialize |
