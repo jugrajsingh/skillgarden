@@ -153,6 +153,20 @@ Docker best practices with language-aware generation. Supports Python, Node.js, 
 
 **Agent:** dockerfile-reviewer (sonnet, security + performance review with severity grading).
 
+### grepai
+
+GrepAI semantic code search setup, initialization, and health monitoring. Guided orchestrator for Docker infrastructure, embedding provider/model selection, storage backend, and MCP registration.
+
+**Commands:**
+
+| Command | Description |
+|---------|-------------|
+| `/grepai:setup` | Full guided setup (Docker, embeddings, storage, MCP, indexing) |
+| `/grepai:init` | Initialize grepai in current project with provider/model/storage config |
+| `/grepai:status` | Health check all components (Docker, Ollama, PostgreSQL, index, MCP) |
+
+**Infrastructure:** Includes docker-compose.yml template with Ollama + PostgreSQL/pgvector.
+
 ### branch-guardian
 
 Git-flow branch protection. Blocks direct commits to main/develop.
@@ -214,6 +228,7 @@ Install plugins you need:
 /plugin install pysmith@skillgarden
 /plugin install makesmith@skillgarden
 /plugin install dockercraft@skillgarden
+/plugin install grepai@skillgarden
 ```
 
 Verify installation:
@@ -247,6 +262,78 @@ git add src/auth.py src/utils.py
 - **Compose, don't monolith** - Small plugins that do one thing well
 - **Persist, don't forget** - 3-file persistence for cross-session memory
 - **Evidence, don't claim** - file:line references and test proof required
+
+## Semantic Code Search with grepai
+
+SkillGarden configures Claude Code to use [grepai](https://github.com/yoanbernabeu/grepai) as its primary code exploration tool. grepai is a privacy-first semantic search engine that indexes the meaning of your code using vector embeddings, enabling natural language queries instead of exact text matching.
+
+### Why grepai?
+
+| Standard Grep | grepai |
+|---------------|--------|
+| Exact text matching | Understands intent |
+| Need to know variable names | Search by what code does |
+| No call graph awareness | Trace callers/callees |
+| `grep "authenticate"` | `grepai search "user login flow"` |
+
+### Setup
+
+Use the guided setup command:
+
+```bash
+/grepai:setup
+```
+
+This walks through Docker infrastructure, embedding provider/model selection, storage backend, MCP registration, and indexing — all interactively.
+
+Or set up manually:
+
+```bash
+# Start Ollama (embeddings)
+docker compose up -d
+
+# Pull the embedding model
+docker exec ollama ollama pull nomic-embed-text
+
+# Initialize grepai in your project
+grepai init
+```
+
+The default config uses GOB (local file) storage and nomic-embed-text embeddings — no PostgreSQL needed:
+
+```yaml
+embedder:
+  provider: ollama
+  model: nomic-embed-text
+  endpoint: http://localhost:11434
+
+store:
+  backend: gob
+```
+
+Start the file watcher to build and maintain the index:
+
+```bash
+grepai watch
+```
+
+Check health of all components:
+
+```bash
+/grepai:status
+```
+
+### How Claude Code Uses It
+
+CLAUDE.md configures Claude to prefer grepai over standard Grep/Glob for exploration:
+
+- **Semantic search** — `grepai search "plugin validation logic"` finds relevant code even without exact keyword matches
+- **Call graph tracing** — `grepai trace callers "HandleRequest"` shows all callers before modifying a function
+- **Fallback** — Standard Grep/Glob for exact text matching (variable names, imports, specific strings)
+
+### MCP Integration
+
+grepai exposes an MCP server that Claude Code connects to automatically, providing `grepai_search`, `grepai_trace_callers`, `grepai_trace_callees`, and `grepai_trace_graph` as native tools.
 
 ## Contributing
 
