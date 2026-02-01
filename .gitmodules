@@ -1,0 +1,6 @@
+[submodule "inspirations/superpowers-agent-skills"]
+	path = inspirations/superpowers-agent-skills
+	url = https://github.com/obra/superpowers.git
+[submodule "inspirations/grepai-skills"]
+	path = inspirations/grepai-skills
+	url = https://github.com/yoanbernabeu/grepai-skills.git

@@ -1,0 +1,49 @@
+# GrepAI dev stack: Ollama (embeddings) + GOB (local file storage)
+#
+# Usage:
+#   docker compose up -d
+#   docker exec ollama ollama pull nomic-embed-text
+#
+# grepai config (.grepai/config.yaml):
+#   embedder:
+#     provider: ollama
+#     model: nomic-embed-text
+#     endpoint: http://localhost:11434
+#   store:
+#     backend: gob
+#
+# Notes:
+#   - No GPU support: Intel NPU is unsupported by Ollama, runs on CPU
+#   - ollama/ollama:latest is the only official image (no smaller CPU-only variant)
+#   - Models are persisted in the ollama_data volume across restarts
+#   - GOB stores the index as .grepai/index.gob — no database needed
+#
+# Optional: PostgreSQL + pgvector (uncomment for team/scalable setups)
+#   Known issue: pgvector has a UTF-8 encoding bug where files with Unicode
+#   box-drawing characters fail to index. GOB does not have this limitation.
+#
+#  postgres:
+#    image: pgvector/pgvector:pg16
+#    container_name: grepai-postgres
+#    ports:
+#      - "5432:5432"
+#    environment:
+#      POSTGRES_USER: grepai
+#      POSTGRES_PASSWORD: grepai
+#      POSTGRES_DB: grepai
+#    volumes:
+#      - postgres_data:/var/lib/postgresql/data
+#    restart: unless-stopped
+
+services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    restart: unless-stopped
+
+volumes:
+  ollama_data:

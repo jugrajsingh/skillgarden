@@ -22,9 +22,6 @@ Thumbs.db
 # Claude Code
 .claude/settings.local.json
 
-# Local-only submodules (not committed to remote)
-inspirations/
-.gitmodules
 
 # Logs
 *.log
@@ -41,3 +38,4 @@ build/
 
 
 .claude
+.grepai/
