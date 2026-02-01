@@ -140,6 +140,18 @@
       },
       "category": "execution",
       "tags": ["execution", "tdd", "code-review", "verification", "shipping", "pull-request", "subagents"]
+    },
+    {
+      "name": "grepai",
+      "source": "./plugins/grepai",
+      "description": "GrepAI semantic code search setup, initialization, and health monitoring with Docker infrastructure",
+      "version": "0.1.0",
+      "author": {
+        "name": "Jugraj Singh",
+        "email": "jugrajskhalsa@gmail.com"
+      },
+      "category": "devops",
+      "tags": ["grepai", "semantic-search", "mcp", "ollama", "postgres", "pgvector", "docker"]
     }
   ]
 }

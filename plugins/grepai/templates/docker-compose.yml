@@ -1,0 +1,48 @@
+# GrepAI dev stack: Ollama (embeddings) + PostgreSQL/pgvector (storage)
+#
+# Usage:
+#   docker compose up -d
+#   docker exec ollama ollama pull mxbai-embed-large
+#
+# grepai config (.grepai/config.yaml):
+#   embedder:
+#     provider: ollama
+#     model: mxbai-embed-large
+#     endpoint: http://localhost:11434
+#   store:
+#     backend: postgres
+#     postgres:
+#       dsn: postgres://grepai:grepai@localhost:5432/grepai
+#
+# Notes:
+#   - No GPU support: Intel NPU is unsupported by Ollama, runs on CPU
+#   - ollama/ollama:latest is the only official image (no smaller CPU-only variant)
+#   - Models are persisted in the ollama_data volume across restarts
+#   - PostgreSQL uses pgvector/pgvector:pg16 (pgvector pre-installed)
+
+services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    restart: unless-stopped
+
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: grepai-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: grepai
+      POSTGRES_PASSWORD: grepai
+      POSTGRES_DB: grepai
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  ollama_data:
+  postgres_data:
