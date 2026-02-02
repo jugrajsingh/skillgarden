@@ -1,0 +1,23 @@
+# GrepAI: Ollama only (for GOB local file storage)
+#
+# Usage:
+#   docker compose -f docker-compose-ollama.yml up -d
+#   docker exec ollama ollama pull nomic-embed-text
+#
+# Notes:
+#   - No GPU support: Intel NPU is unsupported by Ollama, runs on CPU
+#   - Models are persisted in the ollama_data volume across restarts
+#   - GOB stores the index as .grepai/index.gob — no database needed
+
+services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    restart: unless-stopped
+
+volumes:
+  ollama_data:

@@ -53,13 +53,45 @@ which docker
 
 If missing, instruct to install Docker Desktop or Docker Engine and stop.
 
-## Step 2: Docker Compose Setup
+## Step 2: Storage Backend Selection
 
-Read template:
+Present via AskUserQuestion:
 
 ```text
-Read: ${CLAUDE_PLUGIN_ROOT}/templates/docker-compose.yml
+Which storage backend?
+
+○ GOB (local file) — simple, zero config, single-project only (Recommended)
+○ PostgreSQL + pgvector — scalable, team-ready, supports workspaces
+○ Qdrant — lightweight vector DB, supports workspaces
 ```
+
+If **GOB**: default storage, no extra config needed. Index stored in `.grepai/index.gob`.
+
+If **PostgreSQL**: note the DSN for later:
+
+```text
+DSN: postgres://grepai:grepai@localhost:5432/grepai
+```
+
+**Known issue:** PostgreSQL + pgvector has a UTF-8 encoding bug where files
+containing Unicode box-drawing characters (e.g. U+2550 ═) fail to index. GOB
+does not have this limitation.
+
+If **Qdrant**: note the endpoint for later:
+
+```text
+Endpoint: http://localhost:6334
+```
+
+## Step 3: Docker Compose Setup
+
+Select the template based on storage choice:
+
+- GOB → `${CLAUDE_PLUGIN_ROOT}/templates/docker-compose-ollama.yml`
+- PostgreSQL → `${CLAUDE_PLUGIN_ROOT}/templates/docker-compose-postgres.yml`
+- Qdrant → `${CLAUDE_PLUGIN_ROOT}/templates/docker-compose-qdrant.yml`
+
+Read the selected template.
 
 Present via AskUserQuestion:
 
@@ -95,7 +127,7 @@ Verify with:
 docker compose -f {COMPOSE_PATH} ps
 ```
 
-## Step 3: Embedding Provider Selection
+## Step 4: Embedding Provider Selection
 
 Present via AskUserQuestion:
 
@@ -119,7 +151,7 @@ Cost estimates per full index:
 
 If **Ollama**: proceed to model selection.
 
-## Step 4: Embedding Model Selection
+## Step 5: Embedding Model Selection
 
 Present via AskUserQuestion based on chosen provider.
 
@@ -158,36 +190,13 @@ If yes:
 docker exec ollama ollama pull {MODEL}
 ```
 
-## Step 5: Storage Backend Selection
-
-Present via AskUserQuestion:
-
-```text
-Which storage backend?
-
-○ GOB (local file) — simple, zero config, grepai default (Recommended)
-○ PostgreSQL + pgvector — scalable, concurrent, team-ready
-```
-
-If **GOB**: default storage, no extra config needed. Index stored in `.grepai/index.gob`.
-
-If **PostgreSQL**: add postgres service to docker-compose and note the DSN:
-
-```text
-DSN: postgres://grepai:grepai@localhost:5432/grepai
-```
-
-**Known issue:** PostgreSQL + pgvector has a UTF-8 encoding bug where files
-containing Unicode box-drawing characters (e.g. ═, ╔) fail to index. GOB
-does not have this limitation.
-
 ## Step 6: Initialize grepai
 
 Delegate to the initializing skill with collected choices:
 
 Invoke the `grepai:initializing` skill and follow it exactly.
 
-Pass context: chosen provider, model, storage backend, and DSN if applicable.
+Pass context: chosen provider, model, storage backend, DSN if postgres, endpoint if qdrant.
 
 ## Step 7: MCP Registration
 
@@ -254,6 +263,7 @@ Infrastructure:
   ✓ Docker Compose      {COMPOSE_PATH}
   ✓ Ollama              http://localhost:11434
   ✓ PostgreSQL/pgvector  localhost:5432 (only if postgres backend)
+  ✓ Qdrant              localhost:6333/6334 (only if qdrant backend)
 
 Embedding:
   ✓ Provider   {PROVIDER}

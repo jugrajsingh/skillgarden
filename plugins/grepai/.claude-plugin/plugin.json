@@ -1,12 +1,12 @@
 {
   "name": "grepai",
-  "version": "0.1.0",
-  "description": "GrepAI semantic code search setup, initialization, and health monitoring with Docker infrastructure",
+  "version": "0.2.0",
+  "description": "GrepAI semantic code search setup, initialization, workspace management, and health monitoring with Docker infrastructure",
   "author": {
     "name": "Jugraj Singh",
     "email": "jugrajskhalsa@gmail.com"
   },
   "repository": "https://github.com/jugrajsingh/skillgarden",
   "license": "MIT",
-  "keywords": ["grepai", "semantic-search", "mcp", "ollama", "postgres", "pgvector"]
+  "keywords": ["grepai", "semantic-search", "mcp", "ollama", "postgres", "pgvector", "qdrant", "workspace"]
 }

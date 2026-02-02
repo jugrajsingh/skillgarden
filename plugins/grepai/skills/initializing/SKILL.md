@@ -19,12 +19,45 @@ This skill expects context from the `grepai:setting-up` skill:
 
 - **provider**: ollama or openai
 - **model**: embedding model name
-- **backend**: postgres or gob
+- **backend**: postgres, qdrant, or gob
 - **dsn**: PostgreSQL connection string (if postgres)
+- **qdrant_endpoint**: Qdrant endpoint (if qdrant)
 
 If invoked standalone (via /grepai:init), ask for these values via AskUserQuestion.
 
 ## Workflow
+
+### 0. Project Scope Selection
+
+When invoked standalone (not from setting-up skill), ask via AskUserQuestion:
+
+```text
+Project scope?
+
+○ Single project — index this project only (Recommended)
+○ Workspace — cross-project search (requires PostgreSQL or Qdrant)
+```
+
+**If workspace:**
+
+1. Ask for workspace name (suggest based on parent directory name)
+2. Check if workspace exists:
+
+   ```bash
+   grepai workspace list
+   ```
+
+3. If new workspace: invoke the `grepai:workspace-managing` skill with operation=create, then return here
+4. If existing workspace: add current project:
+
+   ```bash
+   grepai workspace add {NAME} .
+   ```
+
+5. Still run steps 1-5 below for per-project settings (chunking, ignore patterns)
+6. In the summary (step 6), note workspace membership
+
+**If single project:** continue with step 1.
 
 ### 1. Check Existing Config
 
@@ -113,6 +146,15 @@ store:
 containing Unicode box-drawing characters (e.g. U+2550 ═) fail to index.
 GOB does not have this limitation.
 
+**For Qdrant backends**, replace the store section:
+
+```yaml
+store:
+  backend: qdrant
+  qdrant:
+    endpoint: http://localhost:6334
+```
+
 ### Dimension Reference
 
 | Model | Dimensions |
@@ -148,6 +190,8 @@ Config: .grepai/config.yaml
   Trace:     enabled
 
 .gitignore: ✓ .grepai/ excluded
+
+Workspace: {NAME} (only if workspace mode, otherwise omit this line)
 
 Next steps:
   grepai index               # Build initial index

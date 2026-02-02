@@ -22,10 +22,10 @@ Run each check sequentially. Collect results, then print a unified report.
 ### 1. Docker Services
 
 ```bash
-docker ps --filter name=ollama --filter name=grepai-postgres --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
+docker ps --filter name=ollama --filter name=grepai-postgres --filter name=grepai-qdrant --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
 ```
 
-Record: ollama running? grepai-postgres running?
+Record: ollama running? grepai-postgres running? grepai-qdrant running?
 
 ### 2. Ollama Connectivity
 
@@ -60,7 +60,7 @@ Skip if config shows GOB backend. Record: accepting connections?
 docker exec grepai-postgres psql -U grepai -d grepai -tAc "SELECT extname FROM pg_extension WHERE extname='vector'"
 ```
 
-Skip if config shows GOB backend. Record: vector extension installed?
+Skip if config shows GOB or qdrant backend. Record: vector extension installed?
 
 ### 6. grepai Config
 
@@ -98,6 +98,30 @@ grepai watch --status
 
 Record: running or not.
 
+### 10. Workspace Config
+
+```bash
+grepai workspace list
+```
+
+Record: configured workspaces, backend type, project count per workspace. Skip if no workspaces configured.
+
+### 11. Workspace Status
+
+```bash
+grepai workspace status
+```
+
+Record: per-workspace indexing health. Skip if no workspaces configured.
+
+### 12. Qdrant Connectivity
+
+```bash
+curl -s --max-time 5 http://localhost:6333/collections
+```
+
+Skip if config does not use qdrant backend. Record: reachable? Collection count.
+
 ## Report Format
 
 Print unified status report:
@@ -111,8 +135,9 @@ Infrastructure:
   {S} Docker           ollama: {STATUS}
   {S} Ollama           http://localhost:11434 — {STATUS}
   {S} Models           {MODEL_LIST} (or "none pulled")
-  {S} PostgreSQL       {STATUS} (only if postgres backend, otherwise "skipped — GOB")
-  {S} pgvector         {STATUS} (only if postgres backend, otherwise "skipped — GOB")
+  {S} PostgreSQL       {STATUS} (only if postgres backend, otherwise "skipped")
+  {S} pgvector         {STATUS} (only if postgres backend, otherwise "skipped")
+  {S} Qdrant           {STATUS} (only if qdrant backend, otherwise "skipped")
 
 Configuration:
   {S} Config           .grepai/config.yaml — {PROVIDER}/{MODEL}
@@ -126,6 +151,9 @@ Index:
 Integration:
   {S} MCP server       {SCOPE} — {STATUS}
   {S} Watch daemon     {STATUS}
+
+Workspaces: (only if workspaces configured)
+  {S} {WORKSPACE_1}   backend: {TYPE}, {PROJECT_COUNT} projects — {STATUS}
 
 ============================================================================
 ```
@@ -147,3 +175,5 @@ After the report, if any component shows ✗, print targeted fix suggestions:
 | No index | Run `grepai index` to build initial index |
 | MCP not registered | `claude mcp add grepai -- grepai mcp-serve` |
 | Watch not running | `grepai watch --background` |
+| Qdrant unreachable | `docker start grepai-qdrant` then wait 5s |
+| Workspace issues | Run `/grepai:workspace:status` for details |

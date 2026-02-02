@@ -144,14 +144,14 @@
     {
       "name": "grepai",
       "source": "./plugins/grepai",
-      "description": "GrepAI semantic code search setup, initialization, and health monitoring with Docker infrastructure",
-      "version": "0.1.0",
+      "description": "GrepAI semantic code search setup, initialization, workspace management, and health monitoring with Docker infrastructure",
+      "version": "0.2.0",
       "author": {
         "name": "Jugraj Singh",
         "email": "jugrajskhalsa@gmail.com"
       },
       "category": "devops",
-      "tags": ["grepai", "semantic-search", "mcp", "ollama", "postgres", "pgvector", "docker"]
+      "tags": ["grepai", "semantic-search", "mcp", "ollama", "postgres", "pgvector", "qdrant", "workspace", "docker"]
     }
   ]
 }

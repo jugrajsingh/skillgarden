@@ -1,0 +1,52 @@
+# GrepAI: Ollama + PostgreSQL/pgvector
+#
+# Usage:
+#   docker compose -f docker-compose-postgres.yml up -d
+#   docker exec ollama ollama pull nomic-embed-text
+#
+# grepai config (.grepai/config.yaml):
+#   store:
+#     backend: postgres
+#     postgres:
+#       dsn: postgres://grepai:grepai@localhost:5432/grepai
+#
+# Notes:
+#   - No GPU support: Intel NPU is unsupported by Ollama, runs on CPU
+#   - Models are persisted in the ollama_data volume across restarts
+#   - pgvector extension auto-installs on first grepai index
+#
+# Known issue: pgvector has a UTF-8 encoding bug where files with Unicode
+# box-drawing characters (U+2550 ═, U+2554 ╔, etc.) fail to index.
+# Use GOB backend if this affects your codebase.
+
+services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    restart: unless-stopped
+
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: grepai-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: grepai
+      POSTGRES_PASSWORD: grepai
+      POSTGRES_DB: grepai
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U grepai"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  ollama_data:
+  pgdata:
