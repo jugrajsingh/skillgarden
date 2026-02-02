@@ -12,6 +12,7 @@ allowed-tools:
   - Bash(which *)
   - Bash(claude *)
   - Write
+  - Edit
   - AskUserQuestion
   - Skill
 ---
@@ -67,6 +68,8 @@ Which storage backend?
 
 If **GOB**: default storage, no extra config needed. Index stored in `.grepai/index.gob`.
 
+**Note:** If the user plans to use workspace mode (cross-project search) later, they should pick PostgreSQL or Qdrant for the workspace backend. GOB is fine for the per-project local config — the workspace has its own separate store config.
+
 If **PostgreSQL**: note the DSN for later:
 
 ```text
@@ -74,13 +77,14 @@ DSN: postgres://grepai:grepai@localhost:5432/grepai
 ```
 
 **Known issue:** PostgreSQL + pgvector has a UTF-8 encoding bug where files
-containing Unicode box-drawing characters (e.g. U+2550 ═) fail to index. GOB
+containing Unicode box-drawing characters (e.g. U+2550) fail to index. GOB
 does not have this limitation.
 
 If **Qdrant**: note the endpoint for later:
 
 ```text
-Endpoint: http://localhost:6334
+REST API: http://localhost:6333
+gRPC:     http://localhost:6334
 ```
 
 ## Step 3: Docker Compose Setup
@@ -198,24 +202,13 @@ Invoke the `grepai:initializing` skill and follow it exactly.
 
 Pass context: chosen provider, model, storage backend, DSN if postgres, endpoint if qdrant.
 
+**For workspace mode:** tell the initializing skill to use GOB for the local per-project config. The workspace handles its own shared store separately via `~/.grepai/workspace.yaml`.
+
 ## Step 7: MCP Registration
 
-Present via AskUserQuestion:
+Delegate to the `grepai:mcp-setup` skill and follow it exactly.
 
-```text
-Where should grepai MCP server be registered?
-
-○ Global (~/.claude/mcp.json) — available in all projects (Recommended)
-○ Project (./.claude/mcp.json) — this project only
-```
-
-Register:
-
-```bash
-claude mcp add grepai -- grepai mcp-serve
-```
-
-For project-scope, add `--scope project` flag. For global, add `--scope global` flag.
+Pass context: workspace name (if workspace mode was chosen), so it can offer the `--workspace` flag option.
 
 ## Step 8: Official Skills Plugin
 
@@ -244,11 +237,21 @@ Start grepai watch daemon now? This monitors file changes and updates the index.
 ○ No, I'll start later
 ```
 
-If yes:
+If yes, branch based on mode:
+
+**Single project:**
 
 ```bash
 grepai watch --background
 ```
+
+**Workspace mode:**
+
+```bash
+grepai watch --workspace {NAME} --background
+```
+
+Both per-project and workspace watchers can coexist. For workspace mode, the workspace watcher is the primary one to start.
 
 ## Final Summary
 
@@ -260,26 +263,31 @@ GrepAI Setup Complete
 ============================================================================
 
 Infrastructure:
-  ✓ Docker Compose      {COMPOSE_PATH}
-  ✓ Ollama              http://localhost:11434
-  ✓ PostgreSQL/pgvector  localhost:5432 (only if postgres backend)
-  ✓ Qdrant              localhost:6333/6334 (only if qdrant backend)
+  Docker Compose      {COMPOSE_PATH}
+  Ollama              http://localhost:11434
+  PostgreSQL/pgvector  localhost:5432 (only if postgres backend)
+  Qdrant              localhost:6333/6334 (only if qdrant backend)
 
 Embedding:
-  ✓ Provider   {PROVIDER}
-  ✓ Model      {MODEL}
-  ✓ Dimensions {DIMS}
+  Provider   {PROVIDER}
+  Model      {MODEL}
+  Dimensions {DIMS}
 
 Storage:
-  ✓ Backend    {BACKEND}
+  Backend    {BACKEND}
 
 Integration:
-  ✓ MCP server registered ({SCOPE})
-  ✓ Config     .grepai/config.yaml
+  MCP server registered ({SCOPE})
+  Config     .grepai/config.yaml
+
+Workspace: {NAME} (only if workspace mode)
+  CLAUDE.md workspace guidance added
+  Watcher: grepai watch --workspace {NAME} --background
 
 Commands:
   grepai status              # Check index health
-  grepai watch --background  # Start file watcher
+  grepai watch --background  # Start file watcher (single project)
+  grepai watch --workspace {NAME} --background  # Workspace watcher
   grepai index               # Full re-index
   /grepai:status             # Health check all components
 ============================================================================

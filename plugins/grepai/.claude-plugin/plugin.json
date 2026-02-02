@@ -1,7 +1,7 @@
 {
   "name": "grepai",
-  "version": "0.2.0",
-  "description": "GrepAI semantic code search setup, initialization, workspace management, and health monitoring with Docker infrastructure",
+  "version": "0.3.0",
+  "description": "GrepAI semantic code search setup, initialization, workspace management, MCP configuration, embedder management, and health monitoring with Docker infrastructure",
   "author": {
     "name": "Jugraj Singh",
     "email": "jugrajskhalsa@gmail.com"

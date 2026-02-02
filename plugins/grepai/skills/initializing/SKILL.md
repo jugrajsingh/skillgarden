@@ -5,8 +5,10 @@ allowed-tools:
   - Read
   - Glob
   - Bash(grepai *)
+  - Edit
   - Write
   - AskUserQuestion
+  - Skill
 ---
 
 # GrepAI Project Initialization
@@ -20,8 +22,7 @@ This skill expects context from the `grepai:setting-up` skill:
 - **provider**: ollama or openai
 - **model**: embedding model name
 - **backend**: postgres, qdrant, or gob
-- **dsn**: PostgreSQL connection string (if postgres)
-- **qdrant_endpoint**: Qdrant endpoint (if qdrant)
+- **workspace_name**: workspace name (if workspace mode)
 
 If invoked standalone (via /grepai:init), ask for these values via AskUserQuestion.
 
@@ -40,22 +41,34 @@ Project scope?
 
 **If workspace:**
 
-1. Ask for workspace name (suggest based on parent directory name)
-2. Check if workspace exists:
+1. Determine which directory to add as the project. Ask via AskUserQuestion:
+
+   ```text
+   Which directory should be added to the workspace?
+
+   ○ Current directory ({cwd}) (Recommended)
+   ○ Parent directory ({parent}) — if it contains multiple project subdirectories
+   ○ Custom path
+   ```
+
+2. Ask for workspace name (suggest based on parent directory name)
+3. Check if workspace exists:
 
    ```bash
    grepai workspace list
    ```
 
-3. If new workspace: invoke the `grepai:workspace-managing` skill with operation=create, then return here
-4. If existing workspace: add current project:
+4. If new workspace: invoke the `grepai:workspace-managing` skill with operation=create, then return here
+5. If existing workspace: add the chosen directory:
 
    ```bash
-   grepai workspace add {NAME} .
+   grepai workspace add {NAME} {ABSOLUTE_PATH}
    ```
 
-5. Still run steps 1-5 below for per-project settings (chunking, ignore patterns)
-6. In the summary (step 6), note workspace membership
+   Note: grepai derives the project name from `filepath.Base(path)`.
+
+6. Still run steps 1-5 below for per-project config (chunking, ignore patterns, MCP anchor)
+7. In the summary (step 6), note workspace membership and add CLAUDE.md guidance
 
 **If single project:** continue with step 1.
 
@@ -68,7 +81,7 @@ Glob: .grepai/config.yaml
 If `.grepai/` exists, warn:
 
 ```text
-△ Existing .grepai/config.yaml found. Reinitializing will overwrite it.
+Existing .grepai/config.yaml found. Reinitializing will overwrite it.
 ```
 
 Ask via AskUserQuestion:
@@ -82,77 +95,41 @@ Existing grepai config found. What to do?
 
 If cancel, stop.
 
-### 2. Run grepai init
+### 2. Run grepai init (non-interactive)
+
+Use `--yes` flag with provider and backend flags to avoid interactive prompts:
 
 ```bash
-grepai init
+grepai init --yes -p {PROVIDER} -b {BACKEND}
 ```
 
-This creates `.grepai/config.yaml` with defaults.
+Where:
 
-### 3. Read Generated Config
+- `{PROVIDER}` is `ollama` or `openai`
+- `{BACKEND}` is `gob`, `postgres`, or `qdrant`
+
+This creates `.grepai/config.yaml` with defaults and auto-adds `.grepai/` to `.gitignore`.
+
+**For workspace mode:** always use GOB for the local config since the workspace handles the shared store separately:
+
+```bash
+grepai init --yes -p ollama -b gob
+```
+
+### 3. Adjust Model if Needed
+
+Read the generated config:
 
 ```text
 Read: .grepai/config.yaml
 ```
 
-### 4. Write Configured Values
+If the chosen model differs from the default (`nomic-embed-text` for Ollama), edit the config to set the correct model and dimensions:
 
-Overwrite `.grepai/config.yaml` with the chosen settings.
-
-**For Ollama + GOB (most common):**
-
-```yaml
-embedder:
-  provider: ollama
-  model: {MODEL}
-  endpoint: http://localhost:11434
-  dimensions: {DIMS}
-store:
-  backend: gob
-chunking:
-  max_tokens: 512
-  overlap: 50
-trace:
-  enabled: true
-```
-
-**For OpenAI + GOB:**
-
-```yaml
-embedder:
-  provider: openai
-  model: {MODEL}
-  dimensions: {DIMS}
-store:
-  backend: gob
-chunking:
-  max_tokens: 512
-  overlap: 50
-trace:
-  enabled: true
-```
-
-**For PostgreSQL backends**, replace the store section:
-
-```yaml
-store:
-  backend: postgres
-  postgres:
-    dsn: postgres://grepai:grepai@localhost:5432/grepai
-```
-
-**Known issue:** PostgreSQL + pgvector has a UTF-8 encoding bug where files
-containing Unicode box-drawing characters (e.g. U+2550 ═) fail to index.
-GOB does not have this limitation.
-
-**For Qdrant backends**, replace the store section:
-
-```yaml
-store:
-  backend: qdrant
-  qdrant:
-    endpoint: http://localhost:6334
+```text
+Edit: .grepai/config.yaml
+  embedder.model: {MODEL}
+  embedder.dimensions: {DIMS}
 ```
 
 ### Dimension Reference
@@ -166,14 +143,34 @@ store:
 | text-embedding-3-small | 1536 |
 | text-embedding-3-large | 3072 |
 
-### 5. Update .gitignore
+### 4. Verify .gitignore
 
-Check if `.grepai/` is in `.gitignore`. If not, append:
+`grepai init` auto-adds `.grepai/` to `.gitignore`. Verify it was added:
+
+```text
+Read: .gitignore
+```
+
+If `.gitignore` does not exist or `.grepai/` is missing from it, append:
 
 ```text
 # grepai index
 .grepai/
 ```
+
+### 5. CLAUDE.md Workspace Guidance (workspace mode only)
+
+When workspace mode is active, append workspace usage instructions to the project's CLAUDE.md (or AGENTS.md) so agents know to use workspace search parameters with the MCP tool:
+
+```markdown
+## grepai Workspace
+
+This project is part of the `{WORKSPACE}` grepai workspace.
+When using the `grepai_search` MCP tool, pass `workspace="{WORKSPACE}"` to search across all workspace projects.
+Use `projects="{PROJECT_NAME}"` to narrow results to a specific project.
+```
+
+If CLAUDE.md does not exist, create it with just this section. If it exists, append the section (checking it doesn't already have a grepai workspace section).
 
 ### 6. Print Summary
 
@@ -187,15 +184,16 @@ Config: .grepai/config.yaml
   Embedder:  {PROVIDER} / {MODEL} ({DIMS} dims)
   Storage:   {BACKEND}
   Chunking:  512 tokens, 50 overlap
-  Trace:     enabled
 
-.gitignore: ✓ .grepai/ excluded
+.gitignore: .grepai/ excluded
 
 Workspace: {NAME} (only if workspace mode, otherwise omit this line)
+CLAUDE.md:  workspace guidance added (only if workspace mode)
 
 Next steps:
   grepai index               # Build initial index
-  grepai watch --background  # Start file watcher
+  grepai watch --background  # Start file watcher (single project)
+  grepai watch --workspace {NAME} --background  # Start workspace watcher
   /grepai:status             # Verify all components
 ============================================================================
 ```

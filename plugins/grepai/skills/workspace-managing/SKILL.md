@@ -7,7 +7,9 @@ allowed-tools:
   - Bash(grepai *)
   - Bash(docker *)
   - Bash(curl *)
+  - Bash(printf *)
   - Write
+  - Edit
   - AskUserQuestion
 ---
 
@@ -38,8 +40,8 @@ Workspaces require a shared vector store. Ask via AskUserQuestion:
 ```text
 Which shared backend for this workspace?
 
-○ PostgreSQL + pgvector — battle-tested, SQL-based (Recommended)
-○ Qdrant — lightweight, purpose-built vector DB
+○ Qdrant — lightweight, purpose-built vector DB (Recommended)
+○ PostgreSQL + pgvector — battle-tested, SQL-based
 ```
 
 ### 3. Select Embedding Provider
@@ -79,51 +81,115 @@ Which embedding model?
 
 ### 5. Verify Backend Running
 
-Check Docker for the selected backend container:
+Check Docker for the selected backend by image or port, not container name:
 
 **PostgreSQL:**
 
 ```bash
-docker ps --filter name=grepai-postgres --format "{{.Status}}"
+docker ps --filter ancestor=postgres --format "{{.Names}}\t{{.Status}}\t{{.Ports}}"
+```
+
+Or check connectivity directly:
+
+```bash
+curl -s --max-time 5 http://localhost:5432 2>&1 || echo "Port 5432 check done"
 ```
 
 **Qdrant:**
 
+Check Qdrant REST API (port 6333, not 6334 which is gRPC):
+
 ```bash
-docker ps --filter name=grepai-qdrant --format "{{.Status}}"
+curl -s --max-time 5 http://localhost:6333/collections
 ```
 
-If not running, warn and suggest starting with the appropriate template:
+**Ollama:**
+
+```bash
+curl -s --max-time 5 http://localhost:11434/api/tags
+```
+
+If not running, warn and suggest starting:
 
 ```text
 Backend not running. Start with:
-  docker compose -f docker-compose-{postgres|qdrant}.yml up -d
+  docker compose up -d
 ```
 
 ### 6. Create Workspace
 
+`grepai workspace create` is **interactive** — it prompts for backend, provider, and model sequentially. Use piped input for non-interactive creation:
+
+**Qdrant + Ollama (most common):**
+
+The prompt sequence is:
+
+1. "Select storage backend:" → `2` (Qdrant)
+2. "Qdrant endpoint:" → endpoint (or empty for default `http://localhost`)
+3. "Qdrant port:" → port (or empty for default `6334`)
+4. "Collection name:" → empty for auto
+5. "Select embedding provider:" → `1` (Ollama)
+6. "Ollama endpoint:" → empty for default
+7. "Model:" → model name (or empty for default `nomic-embed-text`)
+
 ```bash
-grepai workspace create {NAME} --backend {postgres|qdrant} --provider {ollama|openai} --model {MODEL}
+printf '2\n\n\n\n1\n\n{MODEL}\n' | grepai workspace create {NAME}
 ```
 
-If the CLI requires interactive input, construct config directly by reading/writing `~/.grepai/workspace.yaml`.
+**PostgreSQL + Ollama:**
 
-### 7. Add Current Project
+The prompt sequence is:
 
-Ask via AskUserQuestion:
+1. "Select storage backend:" → `1` (PostgreSQL)
+2. "PostgreSQL DSN:" → DSN string
+3. "Select embedding provider:" → `1` (Ollama)
+4. "Ollama endpoint:" → empty for default
+5. "Model:" → model name
+
+```bash
+printf '1\npostgres://grepai:grepai@localhost:5432/grepai\n1\n\n{MODEL}\n' | grepai workspace create {NAME}
+```
+
+**Qdrant + OpenAI:**
+
+```bash
+printf '2\n\n\n\n2\n{MODEL}\n' | grepai workspace create {NAME}
+```
+
+**PostgreSQL + OpenAI:**
+
+```bash
+printf '1\npostgres://grepai:grepai@localhost:5432/grepai\n2\n{MODEL}\n' | grepai workspace create {NAME}
+```
+
+If piped input fails or prompts change, fall back to reading/writing `~/.grepai/workspace.yaml` directly.
+
+### 7. Add Projects
+
+Ask user which directories to add as projects via AskUserQuestion. Offer contextual options:
 
 ```text
-Add current project to workspace {NAME}?
+Which directories should be added to workspace {NAME}?
 
-○ Yes, add this project (Recommended)
-○ No, I'll add projects later
+○ Current directory ({cwd}) (Recommended)
+○ Subdirectories of {parent} — add each subfolder as a separate project
+○ Custom paths — I'll specify directories
 ```
 
-If yes:
+**If current directory:** use its absolute path:
 
 ```bash
-grepai workspace add {NAME} .
+grepai workspace add {NAME} {ABSOLUTE_CWD_PATH}
 ```
+
+**If subdirectories:** list subdirectories, let user confirm which ones, then add each:
+
+```bash
+grepai workspace add {NAME} {ABSOLUTE_PATH_1}
+grepai workspace add {NAME} {ABSOLUTE_PATH_2}
+```
+
+**Important:** `grepai workspace add` takes an **absolute path** and derives the project name from `filepath.Base(path)` (the directory basename).
 
 ### 8. Print Summary
 
@@ -132,12 +198,13 @@ grepai workspace add {NAME} .
 Workspace Created: {NAME}
 ============================================================================
 
-Backend:   {postgres|qdrant}
+Backend:   {BACKEND}
 Embedder:  {PROVIDER} / {MODEL}
 Projects:  {COUNT}
 
-Add projects:   grepai workspace add {NAME} /path/to/project
+Add projects:   grepai workspace add {NAME} /absolute/path/to/project
 List projects:  /grepai:workspace:show {NAME}
+Start watcher:  grepai watch --workspace {NAME} --background
 Check status:   /grepai:workspace:status {NAME}
 ============================================================================
 ```
@@ -164,14 +231,18 @@ If project path missing, default to current directory.
 
 ### 2. Add Project
 
+Use absolute path:
+
 ```bash
-grepai workspace add {WORKSPACE} {PATH}
+grepai workspace add {WORKSPACE} {ABSOLUTE_PATH}
 ```
+
+Note: grepai derives the project name from `filepath.Base(path)` (the directory basename).
 
 ### 3. Confirm
 
 ```text
-✓ Added {PATH} to workspace {WORKSPACE}
+Added {BASENAME} to workspace {WORKSPACE} (path: {ABSOLUTE_PATH})
 ```
 
 ---
@@ -184,16 +255,24 @@ Remove a project from a workspace.
 
 Extract workspace name and project name from arguments.
 
+**Important:** `grepai workspace remove` takes the **project name** (directory basename), not the path. If the user provides a path, extract the basename.
+
+Show current projects first so the user can identify the correct name:
+
+```bash
+grepai workspace show {WORKSPACE}
+```
+
 ### 2. Remove Project
 
 ```bash
-grepai workspace remove {WORKSPACE} {PROJECT}
+grepai workspace remove {WORKSPACE} {PROJECT_NAME}
 ```
 
 ### 3. Confirm
 
 ```text
-✓ Removed {PROJECT} from workspace {WORKSPACE}
+Removed {PROJECT_NAME} from workspace {WORKSPACE}
 ```
 
 ---
@@ -228,7 +307,7 @@ grepai workspace delete {NAME}
 ### 4. Confirm
 
 ```text
-✓ Workspace {NAME} deleted
+Workspace {NAME} deleted
 ```
 
 ---
@@ -277,6 +356,8 @@ Extract workspace name.
 grepai workspace show {NAME}
 ```
 
+Optionally also read `~/.grepai/workspace.yaml` for additional detail if CLI output is sparse.
+
 ### 3. Format Output
 
 ```text
@@ -288,8 +369,8 @@ Backend:   {TYPE}
 Embedder:  {PROVIDER} / {MODEL}
 
 Projects:
-  ✓ {PROJECT_1}    {PATH_1}
-  ✓ {PROJECT_2}    {PATH_2}
+  {PROJECT_1}    {PATH_1}
+  {PROJECT_2}    {PATH_2}
 
 Commands:
   /grepai:workspace:add {NAME} /path     Add project
@@ -344,4 +425,4 @@ Watcher:  {RUNNING|STOPPED}
 ============================================================================
 ```
 
-Where {S} is ✓ for indexed, ✗ for failed, △ for stale/partial.
+Where {S} is one of: OK for indexed, FAIL for failed, STALE for stale/partial.

@@ -1,39 +1,25 @@
-# GrepAI dev stack: Ollama (embeddings) + GOB (local file storage)
+# GrepAI dev stack: Ollama (embeddings) + Qdrant (vector store)
 #
 # Usage:
 #   docker compose up -d
-#   docker exec ollama ollama pull nomic-embed-text
+#   docker exec ollama ollama pull bge-m3
 #
-# grepai config (.grepai/config.yaml):
+# grepai workspace config:
 #   embedder:
 #     provider: ollama
-#     model: nomic-embed-text
+#     model: bge-m3
 #     endpoint: http://localhost:11434
 #   store:
-#     backend: gob
+#     backend: qdrant
+#     qdrant:
+#       endpoint: http://localhost:6334
 #
 # Notes:
 #   - No GPU support: Intel NPU is unsupported by Ollama, runs on CPU
 #   - ollama/ollama:latest is the only official image (no smaller CPU-only variant)
 #   - Models are persisted in the ollama_data volume across restarts
-#   - GOB stores the index as .grepai/index.gob — no database needed
-#
-# Optional: PostgreSQL + pgvector (uncomment for team/scalable setups)
-#   Known issue: pgvector has a UTF-8 encoding bug where files with Unicode
-#   box-drawing characters fail to index. GOB does not have this limitation.
-#
-#  postgres:
-#    image: pgvector/pgvector:pg16
-#    container_name: grepai-postgres
-#    ports:
-#      - "5432:5432"
-#    environment:
-#      POSTGRES_USER: grepai
-#      POSTGRES_PASSWORD: grepai
-#      POSTGRES_DB: grepai
-#    volumes:
-#      - postgres_data:/var/lib/postgresql/data
-#    restart: unless-stopped
+#   - Qdrant is used for workspace mode (cross-project search)
+#   - Qdrant data is persisted in the qdrant_data volume
 
 services:
   ollama:
@@ -45,5 +31,16 @@ services:
       - ollama_data:/root/.ollama
     restart: unless-stopped
 
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: qdrant
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant_data:/qdrant/storage
+    restart: unless-stopped
+
 volumes:
   ollama_data:
+  qdrant_data:
