@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Claude Code plugin marketplace for developer best practices, git workflow validation, and project scaffolding",
-    "version": "0.3.0"
+    "version": "0.5.0"
   },
   "plugins": [
     {
@@ -144,8 +144,8 @@
     {
       "name": "grepai",
       "source": "./plugins/grepai",
-      "description": "GrepAI semantic code search setup, initialization, workspace management, and health monitoring with Docker infrastructure",
-      "version": "0.2.0",
+      "description": "GrepAI semantic code search setup, initialization, workspace management, MCP configuration, embedder management, and health monitoring with Docker infrastructure",
+      "version": "0.3.0",
       "author": {
         "name": "Jugraj Singh",
         "email": "jugrajskhalsa@gmail.com"

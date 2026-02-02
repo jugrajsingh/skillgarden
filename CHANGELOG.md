@@ -5,6 +5,31 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.0] - 2026-02-02
+
+### Added
+
+- grepai embedder-config skill for viewing, changing, and troubleshooting embedding provider/model configuration
+  - Supports Ollama, OpenAI, and LM Studio providers
+  - Handles cascading changes (dimensions, re-indexing, workspace propagation)
+  - Troubleshooting checks for connectivity, model availability, dimension mismatch
+- grepai mcp-setup skill for IDE-agnostic MCP server configuration
+  - Supports Claude Code, Cursor, Windsurf, and generic .mcp.json
+  - Scope selection (project, user global, project-specific)
+  - Workspace mode with --workspace flag for cross-project search
+
+### Changed
+
+- grepai checking-status skill detects services by image ancestry instead of hardcoded container names
+- grepai initializing skill uses non-interactive `grepai init --yes` with provider/backend flags
+- grepai initializing skill adds CLAUDE.md workspace guidance when in workspace mode
+- grepai setting-up skill delegates MCP registration to new mcp-setup skill
+- grepai workspace-managing skill uses piped input for non-interactive workspace creation
+- grepai workspace-managing skill uses absolute paths and documents project name derivation
+- Docker Compose switched from GOB to Qdrant backend with bge-m3 embedding model
+- grepai plugin version bumped to 0.3.0
+- Marketplace version bumped to 0.5.0
+
 ## [0.4.0] - 2026-02-01
 
 ### Added
