@@ -37,7 +37,7 @@
       "name": "makesmith",
       "source": "./plugins/makesmith",
       "description": "Makefile generation for local development, deployment, and root orchestration with audit capabilities",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "author": {
         "name": "Jugraj Singh",
         "email": "jugrajskhalsa@gmail.com"
@@ -49,7 +49,7 @@
       "name": "dockercraft",
       "source": "./plugins/dockercraft",
       "description": "Docker best practices: language-aware Dockerfile generation, compose orchestration, security auditing, and image optimization",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "author": {
         "name": "Jugraj Singh",
         "email": "jugrajskhalsa@gmail.com"
@@ -61,7 +61,7 @@
       "name": "gitmastery",
       "source": "./plugins/gitmastery",
       "description": "Git workflow validation - enforces explicit file staging, conventional commits, and blocks AI footers",
-      "version": "0.1.1",
+      "version": "0.2.0",
       "author": {
         "name": "Jugraj Singh",
         "email": "jugrajskhalsa@gmail.com"
@@ -73,7 +73,7 @@
       "name": "claudemd",
       "source": "./plugins/claudemd",
       "description": "CLAUDE.md lifecycle management - init, audit, sync, and optimize project context files",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "author": {
         "name": "Jugraj Singh",
         "email": "jugrajskhalsa@gmail.com"
@@ -85,7 +85,7 @@
       "name": "unstuck",
       "source": "./plugins/unstuck",
       "description": "Structured error escalation protocol - diagnose, pivot, rethink, escalate when stuck on a problem",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "author": {
         "name": "Jugraj Singh",
         "email": "jugrajskhalsa@gmail.com"
@@ -97,7 +97,7 @@
       "name": "planner",
       "source": "./plugins/planner",
       "description": "Design brainstorming, implementation planning with 3-file persistence, session recovery, handoff, and worktree isolation",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "author": {
         "name": "Jugraj Singh",
         "email": "jugrajskhalsa@gmail.com"
@@ -109,7 +109,7 @@
       "name": "researcher",
       "source": "./plugins/researcher",
       "description": "Parallel sub-agent research with persistent reports, evidence-backed analysis, and generic dispatch",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "author": {
         "name": "Jugraj Singh",
         "email": "jugrajskhalsa@gmail.com"
@@ -121,7 +121,7 @@
       "name": "tidyup",
       "source": "./plugins/tidyup",
       "description": "Codebase cleanup and hygiene - dead code detection, duplication scan, staleness check, safe removal with archiving",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "author": {
         "name": "Jugraj Singh",
         "email": "jugrajskhalsa@gmail.com"
@@ -133,7 +133,7 @@
       "name": "shipit",
       "source": "./plugins/shipit",
       "description": "Batch execution with subagent pipeline, TDD enforcement, code review, verification gate, PR description, and branch completion",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "author": {
         "name": "Jugraj Singh",
         "email": "jugrajskhalsa@gmail.com"
