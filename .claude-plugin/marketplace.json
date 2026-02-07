@@ -152,6 +152,18 @@
       },
       "category": "devops",
       "tags": ["grepai", "semantic-search", "mcp", "ollama", "postgres", "pgvector", "qdrant", "workspace", "docker"]
+    },
+    {
+      "name": "skillforge",
+      "source": "./plugins/skillforge",
+      "description": "Skill design best practices - audit existing skills and create new ones with reference file patterns, modularization, and token-aware architecture",
+      "version": "0.1.0",
+      "author": {
+        "name": "Jugraj Singh",
+        "email": "jugrajskhalsa@gmail.com"
+      },
+      "category": "meta",
+      "tags": ["skills", "plugin-design", "best-practices", "modularization", "reference-files", "audit", "scaffolding"]
     }
   ]
 }
