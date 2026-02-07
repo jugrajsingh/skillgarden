@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased] - 2026-02-07
+
+### Added
+
+- skillforge plugin for skill design best practices
+  - Audit existing skills against structure, modularization, and gotcha checklist
+  - Create new skills with reference file patterns and token-aware architecture
+
+### Changed
+
+- Move allowed-tools from commands to skills across all plugins (canonical placement)
+- Enhance gitmastery commit skill with critical rules, anti-patterns, and AI footer prohibition
+- Add SKIP env var for merge commits in gitmastery finish/release workflows
+- Modularize makesmith skills into reference files (auditing, generating-deploy, generating-local)
+- Modularize dockercraft generating-compose into 9 service-specific reference files
+- Update Python Dockerfile reference for dockercraft
+- Bump plugin versions: gitmastery 0.2.0, makesmith 0.2.0, dockercraft 0.2.0, claudemd/planner/researcher/shipit/tidyup/unstuck 0.1.1
+
 ## [0.5.0] - 2026-02-02
 
 ### Added
