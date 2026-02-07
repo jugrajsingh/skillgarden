@@ -1,0 +1,27 @@
+# MongoDB Service
+
+## Detection
+
+Dependency patterns: `mongo`, `mongoose`, `pymongo`, `motor`
+
+## Service Definition
+
+```yaml
+  mongodb:
+    image: mongo:7
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+```
+
+## App Environment Variables
+
+```yaml
+- MONGO__URI=mongodb://mongodb:27017/app
+```

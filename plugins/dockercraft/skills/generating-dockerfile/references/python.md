@@ -6,6 +6,35 @@ Python-specific Dockerfile patterns using uv for dependency management.
 
 **uv** (preferred) - Fast, reliable Python package manager
 
+## Base Image Selection
+
+| Base | Uncompressed | Use Case |
+|------|--------------|----------|
+| `python:3.13-alpine3.23` | ~50MB | Smallest, pure-Python deps |
+| `python:3.13-slim-trixie` | ~130MB | Need glibc, compiled extensions |
+| `python:3.13-slim-bookworm` | ~130MB | Stable LTS (Debian 12) |
+
+**Recommendation**: Alpine for pure-Python projects (pydantic, httpx, etc.)
+Use trixie/bookworm if you need: numpy, pandas, scipy, or native extensions.
+
+## Critical Rule: Same Base for Both Stages
+
+**IMPORTANT**: Builder and runtime MUST use the same base image.
+
+```dockerfile
+# WRONG: Different bases = broken venv symlinks
+FROM ghcr.io/astral-sh/uv:0.10-python3.13-alpine AS builder  # /usr/bin/python3
+FROM python:3.13-slim-trixie AS runtime                       # /usr/local/bin/python3
+
+# CORRECT: Same base for both stages
+FROM python:3.13-alpine3.23 AS builder
+COPY --from=ghcr.io/astral-sh/uv:0.10.0 /uv /bin/uv
+# ...
+FROM python:3.13-alpine3.23 AS runtime
+```
+
+The venv contains symlinks to Python. If bases differ, symlinks break.
+
 ## Entry Point Detection
 
 | Check | CMD Generated |
@@ -18,143 +47,92 @@ Python-specific Dockerfile patterns using uv for dependency management.
 | FastAPI + uvicorn | `CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]` |
 | Flask | `CMD ["flask", "run", "--host", "0.0.0.0", "--port", "5000"]` |
 
-## Dockerfile Template
+## Dockerfile Template (Recommended)
 
 ```dockerfile
-# syntax=docker/dockerfile:1
+# =============================================================================
+# Multi-stage build with uv
+# =============================================================================
+# Pattern: Copy uv binary from distroless into standard Python base
+# Result: ~100MB final image (alpine) or ~180MB (slim)
 
-# =============================================================================
+# -----------------------------------------------------------------------------
 # Stage 1: Build dependencies
-# =============================================================================
-FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim AS builder
+# -----------------------------------------------------------------------------
+FROM python:3.13-alpine3.23 AS builder
+
+# Copy uv from distroless (pinned version)
+COPY --from=ghcr.io/astral-sh/uv:0.10.0 /uv /bin/uv
 
 WORKDIR /app
 
 # Install dependencies (cached layer)
 COPY pyproject.toml uv.lock ./
-RUN --mount=type=cache,target=/root/.cache/uv \
-    uv sync --frozen --no-install-project --no-dev
+RUN uv sync --frozen --no-dev --no-install-project
 
-# Copy source and install project
-COPY . .
-RUN --mount=type=cache,target=/root/.cache/uv \
-    uv sync --frozen --no-dev
-
-# =============================================================================
-# Stage 2: Runtime (minimal image)
-# =============================================================================
-FROM python:3.12-slim-bookworm AS runtime
+# -----------------------------------------------------------------------------
+# Stage 2: Production runtime
+# -----------------------------------------------------------------------------
+FROM python:3.13-alpine3.23 AS runtime
 
 WORKDIR /app
 
-# Create non-root user
-RUN useradd --create-home --shell /bin/bash appuser
+# Create non-root user (alpine syntax)
+RUN addgroup -g 1000 appuser && adduser -u 1000 -G appuser -D appuser
 
 # Copy virtual environment from builder
 COPY --from=builder /app/.venv /app/.venv
 
 # Copy application code
-{copy_instructions}
+COPY --chown=appuser:appuser . .
 
 # Set environment
-ENV PATH="/app/.venv/bin:$PATH"
-ENV PYTHONUNBUFFERED=1
-ENV PYTHONDONTWRITEBYTECODE=1
+ENV PATH="/app/.venv/bin:$PATH" \
+    PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1
 
 USER appuser
-
-EXPOSE {port}
 
 {cmd_instruction}
 ```
 
-## Copy Instructions by Structure
-
-**For `src/` layout:**
+## Alternative: Debian Slim (for native extensions)
 
 ```dockerfile
-COPY --from=builder /app/src ./src
-COPY --from=builder /app/pyproject.toml ./
+FROM python:3.13-slim-trixie AS builder
+COPY --from=ghcr.io/astral-sh/uv:0.10.0 /uv /bin/uv
+WORKDIR /app
+COPY pyproject.toml uv.lock ./
+RUN uv sync --frozen --no-dev --no-install-project
+
+FROM python:3.13-slim-trixie AS runtime
+WORKDIR /app
+RUN useradd --create-home --shell /bin/bash appuser
+COPY --from=builder /app/.venv /app/.venv
+COPY --chown=appuser:appuser . .
+ENV PATH="/app/.venv/bin:$PATH" PYTHONUNBUFFERED=1 PYTHONDONTWRITEBYTECODE=1
+USER appuser
+{cmd_instruction}
 ```
 
-**For flat layout with `main.py`:**
+## .dockerignore (CRITICAL)
 
-```dockerfile
-COPY --from=builder /app/*.py ./
-COPY --from=builder /app/{package_name} ./{package_name}
-```
-
-**For package with `__main__.py`:**
-
-```dockerfile
-COPY --from=builder /app/{package_name} ./{package_name}
-```
-
-## Framework-Specific Patterns
-
-### FastAPI
-
-```dockerfile
-# Entry point for FastAPI
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
-
-# Or if using src/ layout
-CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]
-```
-
-Default port: `8000`
-
-### Flask
-
-```dockerfile
-# Production with gunicorn
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "4", "app:app"]
-
-# Or if using factory pattern
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "4", "app:create_app()"]
-```
-
-Default port: `5000`
-
-### Django
-
-```dockerfile
-# Production with gunicorn
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "4", "project.wsgi:application"]
-```
-
-Default port: `8000`
-
-### CLI Application
-
-```dockerfile
-# If [project.scripts] defines 'myapp'
-ENTRYPOINT ["myapp"]
-CMD ["--help"]
-
-# Or module-based
-ENTRYPOINT ["python", "-m", "mypackage"]
-```
-
-## .dockerignore Additions
-
-Add these Python-specific exclusions:
+**MUST include `.venv/`** - otherwise local venv overwrites builder's venv:
 
 ```dockerignore
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-*.egg-info/
-.eggs/
-dist/
-build/
-
-# Virtual environments
+# Virtual environments (CRITICAL: local .venv breaks builds)
 .venv/
 venv/
 env/
 .uv/
+
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
 
 # Testing & Quality
 .pytest_cache/
@@ -162,16 +140,47 @@ env/
 .ruff_cache/
 .coverage
 htmlcov/
-.tox/
-.nox/
 
-# Type stubs
-.pyi
+# Git and IDE
+.git/
+.gitignore
+.idea/
+.vscode/
+
+# Docs and config
+*.md
+docs/
+Makefile*
+docker-compose*.yaml
+```
+
+## Framework-Specific Patterns
+
+### FastAPI
+
+```dockerfile
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+```
+
+### Flask (Production)
+
+```dockerfile
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "4", "app:app"]
+```
+
+### Django (Production)
+
+```dockerfile
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "4", "project.wsgi:application"]
+```
+
+### CLI Application
+
+```dockerfile
+ENTRYPOINT ["python", "-u", "main.py"]
 ```
 
 ## Dependency Detection for Services
-
-Scan `pyproject.toml` for these patterns:
 
 | Dependency | Service Hint |
 |------------|--------------|
@@ -181,24 +190,27 @@ Scan `pyproject.toml` for these patterns:
 | `aiobotocore`, `boto3`, `botocore` | localstack |
 | `celery`, `kombu` | rabbitmq |
 | `pymongo`, `motor` | mongodb |
-| `aiomysql`, `mysqlclient` | mysql |
 
 ## Health Check
 
-For web applications, add health check endpoint and configure:
-
 ```dockerfile
 HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:{port}/health || exit 1
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:{port}/health')" || exit 1
 ```
 
-## Image Size Optimization
+## Image Size Reference
 
-- Builder stage: ~500MB (includes uv, build tools)
-- Runtime stage: ~150MB (minimal Python + deps only)
+| Pattern | Final Size |
+|---------|------------|
+| Alpine + uv distroless copy | ~100MB |
+| Trixie-slim + uv distroless copy | ~180MB |
+| Full `uv:python` image | ~250MB |
 
-Tips:
+## Common Pitfalls
 
-- Use `--no-dev` to exclude dev dependencies
-- Use `--frozen` to ensure reproducible builds
-- Cache mount for `/root/.cache/uv` speeds rebuilds
+| Issue | Cause | Fix |
+|-------|-------|-----|
+| `python: not found` | Different base images | Use same base for builder/runtime |
+| Local packages in image | `.venv/` not in .dockerignore | Add `.venv/` to .dockerignore |
+| Large image | Using full uv image | Copy `/uv` from distroless |
+| Slow rebuilds | No layer caching | Separate `COPY pyproject.toml` from `COPY .` |
