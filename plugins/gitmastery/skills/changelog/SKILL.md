@@ -1,6 +1,11 @@
 ---
 name: changelog
 description: Generate changelog from git commits following Keep a Changelog format
+allowed-tools:
+  - Bash(git *)
+  - Read
+  - Write
+  - AskUserQuestion
 ---
 
 # Changelog Generation

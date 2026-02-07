@@ -1,6 +1,12 @@
 ---
 name: shipping
 description: Branch completion — pre-ship checks, 4-option choice (merge, PR, keep, discard), cleanup
+allowed-tools:
+  - Bash(git *)
+  - Bash(gh *)
+  - Read
+  - Glob
+  - AskUserQuestion
 ---
 
 # Ship Branch

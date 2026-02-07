@@ -1,6 +1,12 @@
 ---
 name: verifying
 description: Evidence-before-claims verification gate — test suite, acceptance criteria, regression check, evidence collection
+allowed-tools:
+  - Bash
+  - Read
+  - Glob
+  - Grep
+  - AskUserQuestion
 ---
 
 # Verification Gate

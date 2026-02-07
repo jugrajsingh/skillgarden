@@ -1,6 +1,13 @@
 ---
 name: researching
 description: Parallel sub-agent research with persistent reports — decompose questions, dispatch agents, synthesize findings
+allowed-tools:
+  - Read
+  - Write
+  - Glob
+  - Grep
+  - Task
+  - AskUserQuestion
 ---
 
 # Parallel Research Workflow

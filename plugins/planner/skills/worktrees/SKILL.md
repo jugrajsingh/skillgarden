@@ -1,6 +1,14 @@
 ---
 name: worktrees
 description: Git worktree isolation — create worktree, detect project setup, run baseline tests
+allowed-tools:
+  - Bash(git *)
+  - Bash(cd *)
+  - Bash(pwd)
+  - Bash(ls *)
+  - Read
+  - Glob
+  - AskUserQuestion
 ---
 
 # Git Worktree Isolation

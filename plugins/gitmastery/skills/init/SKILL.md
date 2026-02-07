@@ -1,6 +1,9 @@
 ---
 name: init
 description: Initialize git-flow configuration for a repository
+allowed-tools:
+  - Bash(git *)
+  - Bash(which *)
 ---
 
 # Git Flow Init

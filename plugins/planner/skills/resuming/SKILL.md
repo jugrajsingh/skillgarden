@@ -1,6 +1,10 @@
 ---
 name: resuming
 description: Session recovery via 5-Question Reboot Test — read persistence files, rebuild context, report next action
+allowed-tools:
+  - Read
+  - Glob
+  - AskUserQuestion
 ---
 
 # Session Recovery

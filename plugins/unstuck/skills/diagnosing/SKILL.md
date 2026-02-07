@@ -1,6 +1,12 @@
 ---
 name: diagnosing
 description: Strike 1 — root cause investigation with evidence gathering and hypothesis testing
+allowed-tools:
+  - Read
+  - Glob
+  - Grep
+  - Bash
+  - AskUserQuestion
 ---
 
 # Diagnosing

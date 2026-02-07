@@ -1,6 +1,10 @@
 ---
 name: feature
 description: Start a new feature branch using git-flow
+allowed-tools:
+  - Bash(git *)
+  - Bash(pwd)
+  - AskUserQuestion
 ---
 
 # Start Feature Branch

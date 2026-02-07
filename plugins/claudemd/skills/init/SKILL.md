@@ -1,6 +1,13 @@
 ---
 name: init
 description: Generate CLAUDE.md hierarchy - root + module-level files throughout a repository using discovery, judgment, and parallel generation
+allowed-tools:
+  - Read
+  - Write
+  - Glob
+  - Grep
+  - Task
+  - AskUserQuestion
 ---
 
 # Init CLAUDE.md Hierarchy

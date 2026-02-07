@@ -1,6 +1,14 @@
 ---
 name: tdd-cycling
 description: RED-GREEN-REFACTOR cycle enforcement — write failing test, minimal code, refactor with safety net
+allowed-tools:
+  - Read
+  - Write
+  - Edit
+  - Glob
+  - Grep
+  - Bash
+  - AskUserQuestion
 ---
 
 # TDD Cycle

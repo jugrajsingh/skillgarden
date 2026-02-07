@@ -1,6 +1,11 @@
 ---
 name: assessing
 description: Analyze codebase for cleanup candidates — dead code, duplication, staleness, context budget
+allowed-tools:
+  - Read
+  - Glob
+  - Grep
+  - AskUserQuestion
 ---
 
 # Codebase Assessment

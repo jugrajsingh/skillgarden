@@ -1,6 +1,13 @@
 ---
 name: escalating
 description: Strike 3 — broader rethink, external search, and structured user escalation
+allowed-tools:
+  - Read
+  - Glob
+  - Grep
+  - Bash
+  - WebSearch
+  - AskUserQuestion
 ---
 
 # Escalating

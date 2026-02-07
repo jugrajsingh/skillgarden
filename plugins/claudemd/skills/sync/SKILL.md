@@ -1,6 +1,13 @@
 ---
 name: sync
 description: Update all CLAUDE.md files to reflect current codebase - fix drift in root, module, and rule files
+allowed-tools:
+  - Read
+  - Edit
+  - Write
+  - Glob
+  - Grep
+  - AskUserQuestion
 ---
 
 # Sync CLAUDE.md Hierarchy
