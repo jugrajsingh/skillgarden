@@ -48,7 +48,7 @@ Each pipeline overrides RELEASE_NAME and HELM_EXTRA_ARGS via target-specific var
 | Placeholder | Description |
 |-------------|-------------|
 | {PROJECT_NAME} | Project name from basename |
-| {PIPELINE} | Pipeline name (crawl, process, export) |
+| {PIPELINE} | Pipeline name (ingest, transform, export) |
 | {GCR_REGISTRY} | gcr.io/{gcp_project} |
 | {ECR_REGISTRY} | {account}.dkr.ecr.{region}.amazonaws.com |
 | {ACR_REGISTRY} | {name}.azurecr.io |
