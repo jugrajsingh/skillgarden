@@ -76,10 +76,6 @@ If **PostgreSQL**: note the DSN for later:
 DSN: postgres://grepai:grepai@localhost:5432/grepai
 ```
 
-**Known issue:** PostgreSQL + pgvector has a UTF-8 encoding bug where files
-containing Unicode box-drawing characters (e.g. U+2550) fail to index. GOB
-does not have this limitation.
-
 If **Qdrant**: note the endpoint for later:
 
 ```text

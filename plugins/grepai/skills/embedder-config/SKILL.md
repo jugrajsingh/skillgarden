@@ -387,19 +387,7 @@ docker exec {OLLAMA_CONTAINER} ollama list
 
 Verify the configured model appears in the list.
 
-#### Check 3: Dimensions match
-
-Test actual embedding dimensions:
-
-```bash
-# Ollama
-curl -s http://localhost:11434/api/embeddings \
-  -d '{"model": "{MODEL}", "prompt": "test"}' | python3 -c "import sys,json; print(f'Actual dims: {len(json.load(sys.stdin)[\"embedding\"])}')"
-```
-
-Compare with configured dimensions in config file. Mismatch causes indexing failures.
-
-#### Check 4: Config file consistency
+#### Check 3: Config file consistency
 
 Read config file and verify:
 
