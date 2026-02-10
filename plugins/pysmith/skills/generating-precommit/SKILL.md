@@ -85,11 +85,13 @@ Copy the base config to `.pre-commit-config.yaml` with applicable sections uncom
 ```text
 Created .pre-commit-config.yaml
 
-Hooks installed:
-  Security:     gitleaks, pip-audit, detect-private-key
-  Validation:   check-ast, check-yaml/json/toml, debug-statements
-  Git hygiene:  no-commit-to-branch, check-merge-conflict
-  Formatting:   ruff (lint+fix), ruff-format, whitespace fixes
+Hook ordering (autofix first to minimize retries):
+  1. Security:    gitleaks, pip-audit, detect-private-key
+  2. Autofix:     whitespace fixers (end-of-file, trailing, line-ending)
+  3. Ruff:        ruff-format THEN ruff --fix (format before lint)
+  4. Validation:  check-ast, check-yaml/json/toml, debug-statements
+  5. Git quality: no-commit-to-branch, check-merge-conflict
+  6. Commits:     conventional-pre-commit (commit-msg stage)
 
 Ruff replaces: black, isort, flake8, bandit, autopep8
 

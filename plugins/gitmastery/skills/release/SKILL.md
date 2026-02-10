@@ -110,3 +110,13 @@ git flow hotfix start <name>
 # ... fix ...
 git flow finish --no-verify --tag
 ```
+
+## Stuck Merge State
+
+If finish fails with "a merge is already in progress", clear the stale state file:
+
+```bash
+rm .git/gitflow/state/merge.json
+```
+
+Then retry. See `/gitmastery:finish` for details.

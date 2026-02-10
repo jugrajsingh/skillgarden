@@ -9,9 +9,9 @@
 #
 # Conventions:
 #   - YAML arrays (not JSON brackets) for args
-#   - Sections: Security → Standard checks → Python tooling → Optional
+#   - Hook ordering: Security → Autofix → Lint+fix → Validation → Git quality
+#   - Rationale: Autofixers modify files first so linters/validators see clean code
 #   - Ruff replaces: black, isort, flake8, bandit, autopep8, autoflake
-#   - Branch protection: main + develop (git-flow)
 #
 # =============================================================================
 
@@ -19,11 +19,11 @@ minimum_pre_commit_version: 3.6.0
 default_install_hook_types:
   - pre-commit
   - commit-msg
-fail_fast: false
+fail_fast: true
 
 repos:
   # ============================================================
-  # 1. SECURITY (detect secrets and vulnerabilities early)
+  # 1. SECURITY (block secrets and vulnerabilities early)
   # ============================================================
 
   # Detect secrets, API keys, credentials in any file type
@@ -41,19 +41,68 @@ repos:
           - --desc
           - --format=columns
 
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: detect-private-key
+
   # ============================================================
-  # 2. STANDARD CHECKS (file validation, git hygiene)
+  # 2. AUTOFIX: whitespace and formatting (modify files first)
   # ============================================================
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v5.0.0
     hooks:
-      # Security
-      - id: detect-private-key
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+      - id: mixed-line-ending
+        args:
+          - --fix=lf
+
+  # ============================================================
+  # 3. PYTHON: RUFF (format first, then lint+fix)
+  # ============================================================
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.8.6
+    hooks:
+      # Formatting FIRST (replaces black) — so linter sees formatted code
+      - id: ruff-format
+      # Linting SECOND with auto-fix (includes isort, security)
+      - id: ruff
+        args:
+          - --fix
+          - --exit-non-zero-on-fix
+
+  # ============================================================
+  # 4. VALIDATION: read-only checks (no file modifications)
+  # ============================================================
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      # Python validation
+      - id: check-ast
+      - id: debug-statements
+
+      # File format validation
+      - id: check-yaml
+        # exclude: '^chart/templates/'  # Uncomment if using Helm charts
+      - id: check-json
+      - id: check-toml
       - id: check-added-large-files
         args:
           - --maxkb=1000
 
+  # ============================================================
+  # 5. GIT QUALITY (branch protection, merge conflicts)
+  # ============================================================
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: check-merge-conflict
+      - id: check-case-conflict
       # Branch protection (git-flow: main + develop)
       - id: no-commit-to-branch
         args:
@@ -62,44 +111,8 @@ repos:
           - --branch
           - develop
 
-      # Python validation
-      - id: check-ast
-      - id: debug-statements
-
-      # File format validation
-      - id: check-yaml
-        exclude: '^chart/templates/'
-      - id: check-json
-      - id: check-toml
-
-      # Git hygiene
-      - id: check-merge-conflict
-      - id: check-case-conflict
-
-      # Whitespace (auto-fix)
-      - id: end-of-file-fixer
-      - id: trailing-whitespace
-      - id: mixed-line-ending
-        args:
-          - --fix=lf
-
   # ============================================================
-  # 3. PYTHON: RUFF (replaces black, isort, flake8, bandit)
-  # ============================================================
-
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.8.6
-    hooks:
-      # Linting with auto-fix (includes security S rules)
-      - id: ruff
-        args:
-          - --fix
-          - --exit-non-zero-on-fix
-      # Formatting (replaces black)
-      - id: ruff-format
-
-  # ============================================================
-  # 4. CONVENTIONAL COMMITS (commit-msg stage)
+  # 6. CONVENTIONAL COMMITS (commit-msg stage)
   # ============================================================
 
   - repo: https://github.com/compilerla/conventional-pre-commit
@@ -125,16 +138,6 @@ repos:
 # OPTIONAL HOOKS (uncomment as needed)
 # =============================================================================
 #
-# Typo detection (recommended for docs-heavy projects):
-#
-#  - repo: https://github.com/codespell-project/codespell
-#    rev: v2.3.0
-#    hooks:
-#      - id: codespell
-#        args:
-#          - --skip
-#          - "*.lock,*.svg"
-#
 # Markdown linting (if .md files present):
 #
 #  - repo: https://github.com/igorshubovych/markdownlint-cli
@@ -152,12 +155,24 @@ repos:
 #
 # Type checking (for strict type safety):
 #
-#  - repo: https://github.com/pre-commit/mirrors-mypy
-#    rev: v1.13.0
+#  - repo: local
 #    hooks:
 #      - id: mypy
-#        additional_dependencies:
-#          - types-all
+#        name: mypy
+#        entry: uv run mypy
+#        language: system
+#        types:
+#          - python
+#
+# Typo detection (recommended for docs-heavy projects):
+#
+#  - repo: https://github.com/codespell-project/codespell
+#    rev: v2.3.0
+#    hooks:
+#      - id: codespell
+#        args:
+#          - --skip
+#          - "*.lock,*.svg"
 #
 # Makefile linting (if Makefiles present):
 #

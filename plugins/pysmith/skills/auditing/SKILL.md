@@ -45,8 +45,9 @@ Analyze a Python project against best practices and generate a structured report
 | .pre-commit-config.yaml exists | File present |
 | gitleaks hook present | Secrets detection enabled |
 | pip-audit hook present | Dependency vulnerability scanning |
-| ruff hooks present | Both ruff (lint) and ruff-format hooks |
+| ruff hooks present | Both ruff-format and ruff (format before lint) |
 | No redundant tools | No black, isort, flake8, bandit alongside ruff |
+| Hook ordering | Security → Autofix → Lint+fix → Validation → Git quality |
 | Branch protection | no-commit-to-branch for main/develop |
 
 ### Project Structure

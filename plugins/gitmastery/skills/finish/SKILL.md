@@ -74,4 +74,18 @@ If conflicts occur:
 
 1. Resolve manually
 2. `git add <resolved-files>`
-3. `git flow finish` (retry)
+3. `git flow finish --continue` (retry)
+
+## Stuck Merge State
+
+If finish fails with "a merge is already in progress", git-flow-next has stale state:
+
+```bash
+# Check the state file
+cat .git/gitflow/state/merge.json
+
+# Clear it (safe if the merge was already completed manually)
+rm .git/gitflow/state/merge.json
+```
+
+Then retry `git flow finish`.
