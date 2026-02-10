@@ -4,7 +4,6 @@ description: Complete current git-flow branch (feature, release, or hotfix)
 allowed-tools:
   - Bash(git *)
   - Bash(pwd)
-  - Bash(SKIP=* git *)
   - AskUserQuestion
 ---
 
@@ -39,15 +38,10 @@ git flow finish  # Merges to develop, deletes branch
 **Release/Hotfix:**
 
 ```bash
-SKIP=no-commit-to-branch,conventional-pre-commit git flow finish --tag -m "v<version> - Release notes"
+git flow finish --no-verify --tag -m "v<version> - Release notes"
 ```
 
-> **Note:** The `SKIP` env var bypasses pre-commit hooks that would reject the merge commit. This is safe because:
->
-> - The merge is mechanical (no new code changes)
-> - All code was already validated when committed to the release branch
-> - The `no-commit-to-branch` hook blocks commits to main/develop
-> - The `conventional-pre-commit` hook may reject merge commit messages
+> **Note:** `--no-verify` skips pre-commit hooks on the merge commit. This is safe because the merge is mechanical — all code was already validated when committed to the release branch.
 
 ### 3. Push Changes
 

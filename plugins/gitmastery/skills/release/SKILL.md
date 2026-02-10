@@ -4,7 +4,6 @@ description: Create a versioned release with semantic versioning
 allowed-tools:
   - Bash(git *)
   - Bash(pwd)
-  - Bash(SKIP=* git *)
   - Read
   - Edit
   - Glob
@@ -79,10 +78,10 @@ Common files to update:
 
 ### 6. Finish Release
 
-Use changelog content for tag message. Skip pre-commit hooks that would reject the merge:
+Use changelog content for tag message. Skip pre-commit hooks on the merge commit:
 
 ```bash
-SKIP=no-commit-to-branch,conventional-pre-commit git flow finish --tag -m "v<version>
+git flow finish --no-verify --tag -m "v<version>
 
 ## Added
 - Feature 1
@@ -92,7 +91,7 @@ SKIP=no-commit-to-branch,conventional-pre-commit git flow finish --tag -m "v<ver
 - Bug fix 1"
 ```
 
-> **Why SKIP?** The merge commit is mechanical—all code was already validated when committed to the release branch. The `no-commit-to-branch` and `conventional-pre-commit` hooks would otherwise reject the merge.
+> **Note:** `--no-verify` skips pre-commit hooks on the merge commit. This is safe because the merge is mechanical — all code was already validated when committed to the release branch.
 
 ### 7. Push
 
@@ -109,5 +108,5 @@ For urgent production fixes:
 git checkout main
 git flow hotfix start <name>
 # ... fix ...
-SKIP=no-commit-to-branch,conventional-pre-commit git flow finish --tag
+git flow finish --no-verify --tag
 ```
