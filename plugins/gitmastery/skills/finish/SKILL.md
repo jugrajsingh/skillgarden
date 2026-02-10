@@ -39,7 +39,7 @@ git flow finish  # Merges to develop, deletes branch
 **Release/Hotfix:**
 
 ```bash
-SKIP=no-commit-to-branch,conventional-commit git flow finish --tag -m "v<version> - Release notes"
+SKIP=no-commit-to-branch,conventional-pre-commit git flow finish --tag -m "v<version> - Release notes"
 ```
 
 > **Note:** The `SKIP` env var bypasses pre-commit hooks that would reject the merge commit. This is safe because:
@@ -47,7 +47,7 @@ SKIP=no-commit-to-branch,conventional-commit git flow finish --tag -m "v<version
 > - The merge is mechanical (no new code changes)
 > - All code was already validated when committed to the release branch
 > - The `no-commit-to-branch` hook blocks commits to main/develop
-> - The `conventional-commit` hook may reject merge commit messages
+> - The `conventional-pre-commit` hook may reject merge commit messages
 
 ### 3. Push Changes
 

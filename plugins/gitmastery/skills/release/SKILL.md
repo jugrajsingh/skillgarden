@@ -82,7 +82,7 @@ Common files to update:
 Use changelog content for tag message. Skip pre-commit hooks that would reject the merge:
 
 ```bash
-SKIP=no-commit-to-branch,conventional-commit git flow finish --tag -m "v<version>
+SKIP=no-commit-to-branch,conventional-pre-commit git flow finish --tag -m "v<version>
 
 ## Added
 - Feature 1
@@ -92,7 +92,7 @@ SKIP=no-commit-to-branch,conventional-commit git flow finish --tag -m "v<version
 - Bug fix 1"
 ```
 
-> **Why SKIP?** The merge commit is mechanical—all code was already validated when committed to the release branch. The `no-commit-to-branch` and `conventional-commit` hooks would otherwise reject the merge.
+> **Why SKIP?** The merge commit is mechanical—all code was already validated when committed to the release branch. The `no-commit-to-branch` and `conventional-pre-commit` hooks would otherwise reject the merge.
 
 ### 7. Push
 
@@ -109,5 +109,5 @@ For urgent production fixes:
 git checkout main
 git flow hotfix start <name>
 # ... fix ...
-SKIP=no-commit-to-branch,conventional-commit git flow finish --tag
+SKIP=no-commit-to-branch,conventional-pre-commit git flow finish --tag
 ```
