@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Claude Code plugin marketplace for developer best practices, git workflow validation, and project scaffolding",
-    "version": "0.5.0"
+    "version": "0.6.0"
   },
   "plugins": [
     {
