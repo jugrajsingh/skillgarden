@@ -66,7 +66,7 @@ ls -la src/ lib/ app/ 2>/dev/null
 git log -10 --oneline
 ```
 
-Read any referenced files to understand current structure.
+Read any referenced files to understand the current structure.
 
 ## Step 2: Initialize Persistence Files
 
