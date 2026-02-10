@@ -1,6 +1,13 @@
 ---
 name: optimize
 description: Reduce context cost across the full CLAUDE.md hierarchy - condense, deduplicate, and restructure module files
+allowed-tools:
+  - Read
+  - Edit
+  - Write
+  - Glob
+  - Grep
+  - AskUserQuestion
 ---
 
 # Optimize CLAUDE.md Hierarchy

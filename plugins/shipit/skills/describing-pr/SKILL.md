@@ -1,6 +1,13 @@
 ---
 name: describing-pr
 description: Generate PR description from changes and plan context — summary, changes, test plan, breaking changes
+allowed-tools:
+  - Bash(git *)
+  - Bash(gh *)
+  - Read
+  - Glob
+  - Grep
+  - AskUserQuestion
 ---
 
 # Describe PR

@@ -1,6 +1,15 @@
 ---
 name: cleaning-up
 description: Execute codebase cleanup with safety gates — assess, confirm, remove, consolidate, archive, verify
+allowed-tools:
+  - Read
+  - Write
+  - Edit
+  - Glob
+  - Grep
+  - Bash(git *)
+  - Skill
+  - AskUserQuestion
 ---
 
 # Cleanup Workflow

@@ -1,6 +1,11 @@
 ---
 name: audit
 description: Analyze health of all CLAUDE.md files - root, module-level, and rules - detecting anti-patterns, staleness, and size issues
+allowed-tools:
+  - Read
+  - Glob
+  - Grep
+  - AskUserQuestion
 ---
 
 # Audit CLAUDE.md Hierarchy

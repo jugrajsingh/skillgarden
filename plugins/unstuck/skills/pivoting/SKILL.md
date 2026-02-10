@@ -1,6 +1,12 @@
 ---
 name: pivoting
 description: Strike 2 — alternative approach when initial diagnosis failed
+allowed-tools:
+  - Read
+  - Glob
+  - Grep
+  - Bash
+  - AskUserQuestion
 ---
 
 # Pivoting

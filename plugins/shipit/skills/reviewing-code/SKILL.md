@@ -1,6 +1,13 @@
 ---
 name: reviewing-code
 description: Code review dispatch — gather diff, dispatch code-reviewer agent, present findings
+allowed-tools:
+  - Bash(git *)
+  - Read
+  - Glob
+  - Grep
+  - Task
+  - AskUserQuestion
 ---
 
 # Code Review Dispatch

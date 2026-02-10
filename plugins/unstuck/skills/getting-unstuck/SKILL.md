@@ -1,6 +1,14 @@
 ---
 name: getting-unstuck
 description: Structured error escalation protocol — 3-strike workflow to diagnose, pivot, and escalate when stuck
+allowed-tools:
+  - Read
+  - Glob
+  - Grep
+  - Bash
+  - Skill
+  - AskUserQuestion
+  - WebSearch
 ---
 
 # Getting Unstuck

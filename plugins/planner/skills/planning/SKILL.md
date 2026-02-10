@@ -1,6 +1,12 @@
 ---
 name: planning
 description: Implementation planning with 3-file persistence — task decomposition, dependency ordering, batch grouping
+allowed-tools:
+  - Read
+  - Write
+  - Glob
+  - Grep
+  - AskUserQuestion
 ---
 
 # Implementation Planning

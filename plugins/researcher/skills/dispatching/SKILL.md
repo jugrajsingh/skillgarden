@@ -1,6 +1,13 @@
 ---
 name: dispatching
 description: Generic parallel agent dispatch for independent problems — verify independence, dispatch, merge results
+allowed-tools:
+  - Read
+  - Write
+  - Glob
+  - Grep
+  - Task
+  - AskUserQuestion
 ---
 
 # Generic Parallel Dispatch

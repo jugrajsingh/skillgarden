@@ -1,6 +1,6 @@
 ---
 name: generating-local
-description: Generate Makefile.local with local development targets for Python projects. Supports configurable venv location (centralized ~/.venvs/ or project-local .venv).
+description: Generate Makefile.local with local development targets for Python projects. Supports configurable venv location (project-local .venv recommended, or centralized ~/.venvs/).
 allowed-tools:
   - Read
   - Write
@@ -12,15 +12,23 @@ allowed-tools:
 
 # Generate Makefile.local
 
-Generate Makefile.local with local development targets. This file stores project-specific configuration (venv location) and provides standardized commands.
+Generate Makefile.local with local development targets. This file stores project-specific configuration (venv location, PYTHONPATH) and provides standardized commands.
 
 ## Philosophy
 
 - **Makefile.local for development** - Committed to repo, dev commands
 - **Makefile.deploy for devops** - Separate file for build/push/deploy
-- **Configurable venv location** - User chooses centralized or project-local
+- **Project-local `.venv/` recommended** - Standard convention, IDE-friendly
+- **PYTHONPATH always exported** - Enables bare imports without build system
 - **uv-native commands** - All commands use `uv run` or `uv sync`
 - **Self-documenting** - `make -f Makefile.local help` shows all targets
+
+## Templates
+
+Templates are in `references/` folder:
+
+- `references/project-local.makefile.md` - For `.venv/` (recommended)
+- `references/centralized.makefile.md` - For `~/.venvs/{project}/`
 
 ## Workflow
 
@@ -34,20 +42,16 @@ Use for default venv name and project identification.
 
 ### 2. Ask Venv Location
 
-Present via AskUserQuestion:
+Present via AskUserQuestion with `.venv/` as recommended (first option):
 
-```text
-Where should the virtual environment be created?
-
-○ ~/.venvs/{project_name}/  (Centralized)
-  - Clean project directory
-  - Survives git clean
-  - Shared across worktrees
-
-○ .venv/  (Project-local)
-  - IDE auto-detects
-  - Standard convention
-  - Isolated per checkout
+```yaml
+question: "Where should the virtual environment be created?"
+header: "Venv location"
+options:
+  - label: ".venv/ (Recommended)"
+    description: "IDE auto-detects, standard uv convention, isolated per checkout"
+  - label: "~/.venvs/{project_name}/"
+    description: "Clean project directory, survives git clean, shared across worktrees"
 ```
 
 ### 3. Check Existing Makefile.local
@@ -58,163 +62,64 @@ Glob: Makefile.local
 
 If exists, ask via AskUserQuestion:
 
-- "Merge targets" - Keep custom targets, update standard ones
-- "Overwrite" - Replace entirely
+- "Overwrite" - Replace entirely with new template
 - "Skip" - Don't modify
 
-### 4. Generate Makefile.local
+### 4. Read Template
 
-**For centralized venv (`~/.venvs/{project}/`):**
+Based on user's venv choice:
 
-```makefile
-# =============================================================================
-# Makefile.local - Local Development Commands
-# =============================================================================
-# Usage: make -f Makefile.local <target>
-# Help:  make -f Makefile.local help
-# =============================================================================
+**For `.venv/` (recommended):**
 
-# Project configuration
-PROJECT_NAME := {project_name}
-VENV := $(HOME)/.venvs/$(PROJECT_NAME)
-
-# Tell uv to use our venv location
-export UV_PROJECT_ENVIRONMENT := $(VENV)
-
-# Python paths
-PYTHON := $(VENV)/bin/python
-UV := uv
-
-.DEFAULT_GOAL := help
-
-.PHONY: help setup-local create-venv install install-dev install-hooks \
-        test test-cov lint format type-check clean
-
-# =============================================================================
-# Setup
-# =============================================================================
-
-help:  ## Show available targets
- @grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
-
-setup-local: create-venv install-dev install-hooks  ## Full local setup
- @echo ""
- @echo "============================================================================="
- @echo "Local setup complete!"
- @echo "============================================================================="
- @echo "Venv location: $(VENV)"
- @echo ""
- @echo "Next steps:"
- @echo "  1. cp example.env.yaml local.env.yaml"
- @echo "  2. Edit local.env.yaml with your settings"
- @echo "  3. make -f Makefile.local test"
- @echo "============================================================================="
-
-create-venv:  ## Create virtual environment
- @if [ ! -d "$(VENV)" ]; then \
-  echo "Creating venv at $(VENV)..."; \
-  $(UV) venv $(VENV); \
- else \
-  echo "Venv exists at $(VENV)"; \
- fi
-
-# =============================================================================
-# Dependencies
-# =============================================================================
-
-install:  ## Install production dependencies
- $(UV) sync --no-dev
-
-install-dev:  ## Install all dependencies (production + dev)
- $(UV) sync
-
-install-hooks: install-dev  ## Install pre-commit hooks
- $(UV) run pre-commit install
-
-# =============================================================================
-# Testing
-# =============================================================================
-
-test:  ## Run tests
- $(UV) run pytest
-
-test-cov:  ## Run tests with coverage
- $(UV) run pytest --cov --cov-report=term-missing
-
-test-watch:  ## Run tests in watch mode
- $(UV) run pytest --watch
-
-# =============================================================================
-# Code Quality
-# =============================================================================
-
-lint:  ## Run linter
- $(UV) run ruff check .
-
-lint-fix:  ## Run linter with auto-fix
- $(UV) run ruff check . --fix
-
-format:  ## Format code
- $(UV) run ruff format .
-
-format-check:  ## Check formatting without changes
- $(UV) run ruff format . --check
-
-type-check:  ## Run type checker
- $(UV) run mypy .
-
-quality: lint format-check type-check  ## Run all quality checks
-
-# =============================================================================
-# Utilities
-# =============================================================================
-
-clean:  ## Remove build artifacts and caches
- rm -rf __pycache__ */__pycache__ */*/__pycache__
- rm -rf .pytest_cache .ruff_cache .mypy_cache
- rm -rf .coverage htmlcov
- rm -rf dist build *.egg-info
- @echo "Cleaned."
-
-clean-venv:  ## Remove virtual environment
- rm -rf $(VENV)
- @echo "Removed venv at $(VENV)"
-
-reset: clean clean-venv  ## Full reset (remove venv and caches)
- @echo "Reset complete. Run 'make -f Makefile.local setup-local' to start fresh."
+```text
+Read: references/project-local.makefile.md
 ```
 
-**For project-local venv (`.venv/`):**
+**For `~/.venvs/`:**
 
-Same as above but with:
-
-```makefile
-VENV := .venv
+```text
+Read: references/centralized.makefile.md
 ```
 
-### 5. Report
+Extract the makefile content from the markdown code block.
+
+### 5. Generate Makefile.local
+
+**For project-local (`.venv/`):**
+
+- Write template as-is (no placeholders to replace)
+
+**For centralized (`~/.venvs/`):**
+
+- Replace `{project_name}` with actual project name
+
+Write to `Makefile.local`.
+
+### 6. Report
 
 ```text
 Created Makefile.local:
 
 Configuration:
-  - Project: {project_name}
   - Venv: {venv_location}
+  - PYTHONPATH: exported (enables bare imports)
 
 Targets:
-  setup-local   - Full local setup (venv + deps + hooks)
-  install       - Install production dependencies
+  setup-local   - Full local setup (deps + hooks)
   install-dev   - Install all dependencies
   test          - Run tests
   lint          - Run linter
   format        - Format code
   type-check    - Run type checker
+  quality       - Run all quality checks
+  fix           - Auto-fix lint + format
   clean         - Remove caches
+  reset         - Full reset
 
 Usage:
   make -f Makefile.local setup-local   # First time setup
   make -f Makefile.local test          # Run tests
-  make -f Makefile.local lint          # Check code
+  make -f Makefile.local quality       # Check code
 ```
 
 ## Integration with Other Skills
@@ -232,23 +137,32 @@ make -f Makefile.local test
 make -f Makefile.local lint
 ```
 
-This ensures consistent venv location regardless of where it's configured.
+This ensures consistent venv location and PYTHONPATH regardless of configuration.
 
 ## Adding Custom Targets
 
-Users can add custom targets to Makefile.local:
+Users can add project-specific targets:
 
 ```makefile
 # =============================================================================
-# Project-Specific Targets
+# Application
 # =============================================================================
+.PHONY: run run-dev
 
 run:  ## Run the application
- $(UV) run python main.py
+ uv run python main.py
 
-migrate:  ## Run database migrations
- $(UV) run alembic upgrade head
+run-dev:  ## Run with auto-reload
+ uv run python main.py --reload
 
-seed:  ## Seed database with test data
- $(UV) run python scripts/seed.py
+# =============================================================================
+# Infrastructure
+# =============================================================================
+.PHONY: infra-up infra-down
+
+infra-up:  ## Start Docker services
+ docker compose up -d --wait
+
+infra-down:  ## Stop Docker services
+ docker compose down
 ```

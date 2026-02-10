@@ -1,6 +1,6 @@
 {
   "name": "researcher",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Parallel sub-agent research with persistent reports, evidence-backed analysis, and generic dispatch",
   "author": {
     "name": "Jugraj Singh",

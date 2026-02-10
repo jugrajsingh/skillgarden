@@ -1,6 +1,12 @@
 ---
 name: brainstorming
 description: Design exploration through guided dialogue — iterative questioning, trade-off analysis, design doc output
+allowed-tools:
+  - Read
+  - Write
+  - Glob
+  - Grep
+  - AskUserQuestion
 ---
 
 # Design Brainstorming

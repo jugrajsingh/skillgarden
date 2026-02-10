@@ -21,7 +21,6 @@ Generate Makefile.deploy with DevOps targets for Docker and Kubernetes deploymen
 - **Separate from local dev** - Makefile.local for development
 - **Multi-registry support** - GCR, ECR, ACR, DockerHub
 - **Tag-on-push pattern** - Build tags locally, push tags for registry
-- **Helm-based deployment** - Kubernetes via Helm charts
 - **Version from git** - Use git describe for image tags
 
 ## Workflow
@@ -60,20 +59,35 @@ How will you deploy?
 ○ None (just build and push)
 ```
 
-### 4. Ask About Multi-Pipeline Support
+### 4. Ask About One-to-Many Deployments
 
-Present via AskUserQuestion:
+Only if deployment target is Helm or kubectl:
 
 ```text
-Does this project have multiple deployment pipelines?
+Does this project deploy the same image as multiple releases?
 
-○ Single pipeline (one deploy target)
-○ Multiple pipelines (e.g., crawl, process, export)
+○ Single deployment (one release)
+○ Multiple deployments (e.g., service-type1, service-type2, service-type3)
 ```
 
-If multiple, ask for pipeline names.
+If multiple, ask for deployment names.
 
-### 5. Generate Makefile.deploy
+### 5. Load Deployment Reference
+
+Read ONLY the reference file matching the user's deployment target choice:
+
+| Deployment Target | Reference File |
+|-------------------|----------------|
+| Helm | `references/helm.md` |
+| kubectl | `references/kubectl.md` |
+| Docker Compose | `references/compose.md` |
+| None | No reference needed |
+
+### 6. Generate Makefile.deploy
+
+Compose the file using the common sections below plus deployment targets from the loaded reference.
+
+#### Common Header
 
 ```makefile
 # =============================================================================
@@ -86,24 +100,13 @@ If multiple, ask for pipeline names.
 # Project configuration
 IMAGE_NAME := {project_name}
 VERSION := $(shell git describe --tags --always 2>/dev/null || echo "latest")
-RELEASE_NAME := {project_name}
-
-# Kubernetes configuration
-NAMESPACE := default
-KUBE_CONTEXT := {kube_context}
-
-# Container Registries
-GCR_REGISTRY := gcr.io/{gcp_project}
-ECR_REGISTRY := {aws_account_id}.dkr.ecr.{region}.amazonaws.com
-ACR_REGISTRY := {acr_name}.azurecr.io
 
 .DEFAULT_GOAL := help
+```
 
-.PHONY: help version build-image push-image-gcr push-image-ecr push-image-acr \
-        push-image build-and-push gcr-login ecr-login acr-login \
-        deploy redeploy helm-lint helm-template helm-dry-run \
-        leaks query-image-size
+#### Common Targets
 
+```makefile
 # =============================================================================
 # Info
 # =============================================================================
@@ -144,79 +147,24 @@ push-image-acr:  ## Tag and push to ACR
 push-image: push-image-{default_registry}  ## Push to default registry
 
 build-and-push: build-image push-image  ## Build and push to default registry
+```
 
-# =============================================================================
-# Registry Login
-# =============================================================================
+Only include push targets for registries the user selected. Include registry variables for selected registries:
 
-gcr-login:  ## Login to GCR
- gcloud auth configure-docker gcr.io --quiet
+```makefile
+# Container Registries (include only selected)
+GCR_REGISTRY := gcr.io/{gcp_project}
+ECR_REGISTRY := {aws_account_id}.dkr.ecr.{region}.amazonaws.com
+ACR_REGISTRY := {acr_name}.azurecr.io
+```
 
-ecr-login:  ## Login to ECR
- aws ecr get-login-password --region {region} | docker login --username AWS --password-stdin $(ECR_REGISTRY)
+#### Deployment Targets
 
-acr-login:  ## Login to ACR
- az acr login --name {acr_name}
+Insert the deployment targets from the loaded reference file. For one-to-many deployments, use the multi-deployment section from the reference.
 
-# =============================================================================
-# Helm Deployment (private targets for reuse)
-# =============================================================================
+#### Utilities
 
-_deploy-release:  ## (private) Deploy a Helm release
- helm upgrade --install $(RELEASE_NAME) ./chart \
-  --namespace $(NAMESPACE) \
-  --kube-context $(KUBE_CONTEXT) \
-  --set image.repository=$(REGISTRY)/$(IMAGE_NAME) \
-  --set image.tag=$(VERSION) \
-  $(HELM_EXTRA_ARGS)
-
-_purge-release:  ## (private) Uninstall a Helm release
- helm uninstall $(RELEASE_NAME) --namespace $(NAMESPACE) --kube-context $(KUBE_CONTEXT) || true
-
-deploy: _deploy-release  ## Deploy with Helm
-
-redeploy: _purge-release  ## Uninstall and redeploy
- @sleep 5
- $(MAKE) -f Makefile.deploy _deploy-release
-
-build-push-deploy: build-and-push deploy  ## Full CI/CD: build, push, deploy
-
-# =============================================================================
-# Helm Utilities
-# =============================================================================
-
-helm-lint:  ## Lint Helm chart
- helm lint ./chart
-
-helm-template:  ## Render Helm templates locally
- helm template $(RELEASE_NAME) ./chart \
-  --set image.repository=$(REGISTRY)/$(IMAGE_NAME) \
-  --set image.tag=$(VERSION)
-
-helm-dry-run:  ## Dry run Helm deployment
- helm upgrade --install $(RELEASE_NAME) ./chart \
-  --namespace $(NAMESPACE) \
-  --kube-context $(KUBE_CONTEXT) \
-  --set image.repository=$(REGISTRY)/$(IMAGE_NAME) \
-  --set image.tag=$(VERSION) \
-  --dry-run
-
-# =============================================================================
-# Status
-# =============================================================================
-
-status:  ## Show deployment status
- kubectl get pods -n $(NAMESPACE) -l app=$(RELEASE_NAME) --context $(KUBE_CONTEXT)
-
-logs:  ## Tail pod logs
- kubectl logs -f -n $(NAMESPACE) -l app=$(RELEASE_NAME) --context $(KUBE_CONTEXT) --tail=100
-
-rollback:  ## Rollback to previous release
- helm rollback $(RELEASE_NAME) --namespace $(NAMESPACE) --kube-context $(KUBE_CONTEXT)
-
-history:  ## Show deployment history
- helm history $(RELEASE_NAME) --namespace $(NAMESPACE) --kube-context $(KUBE_CONTEXT)
-
+```makefile
 # =============================================================================
 # Utilities
 # =============================================================================
@@ -229,36 +177,7 @@ git-flow-release-finish:  ## Finish current git-flow release
  git flow finish --tag
 ```
 
-### Per-Pipeline Targets (Multi-Pipeline)
-
-When user selects multiple pipelines, generate additional targets per pipeline:
-
-```makefile
-# =============================================================================
-# Per-Pipeline Deployment
-# =============================================================================
-
-deploy-{pipeline}: RELEASE_NAME := {project}-{pipeline}
-deploy-{pipeline}: HELM_EXTRA_ARGS := -f chart/values-{pipeline}.yaml
-deploy-{pipeline}: _deploy-release  ## Deploy {pipeline} pipeline
-
-re-deploy-{pipeline}: RELEASE_NAME := {project}-{pipeline}
-re-deploy-{pipeline}: _purge-release  ## Re-deploy {pipeline} pipeline
- @sleep 5
- $(MAKE) -f Makefile.deploy deploy-{pipeline}
-
-template-{pipeline}: RELEASE_NAME := {project}-{pipeline}
-template-{pipeline}: HELM_EXTRA_ARGS := -f chart/values-{pipeline}.yaml
-template-{pipeline}:  ## Render templates for {pipeline}
- helm template $(RELEASE_NAME) ./chart \
-  --set image.repository=$(REGISTRY)/$(IMAGE_NAME) \
-  --set image.tag=$(VERSION) \
-  $(HELM_EXTRA_ARGS)
-
-build-push-deploy-{pipeline}: build-and-push deploy-{pipeline}  ## Full CI/CD for {pipeline}
-```
-
-### 6. Report
+### 7. Report
 
 ```text
 Created Makefile.deploy:
@@ -275,21 +194,16 @@ Targets:
     build-and-push     - Build and push
 
   Deploy:
-    deploy             - Deploy with Helm
-    redeploy           - Uninstall and redeploy
-    build-push-deploy  - Full CI/CD pipeline
+    {deployment_targets_summary}
 
   Utilities:
-    helm-lint          - Lint Helm chart
-    helm-dry-run       - Preview deployment
-    status             - Show pod status
-    logs               - Tail pod logs
+    {utility_targets_summary}
 
 Usage:
   make -f Makefile.deploy build-push-deploy
 ```
 
-## Registry-Specific Login Commands
+## Registry Login Commands
 
 **GCR (Google):**
 
@@ -315,3 +229,11 @@ az acr login --name myregistry
 ```bash
 docker login
 ```
+
+## Deployment Reference Files
+
+Each deployment method is defined in its own reference file under `references/`:
+
+- `references/helm.md` - Helm charts with define macros and multi-pipeline support
+- `references/kubectl.md` - Raw Kubernetes manifests with rolling updates
+- `references/compose.md` - Docker Compose over SSH for remote servers

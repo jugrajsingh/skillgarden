@@ -1,6 +1,6 @@
 {
   "name": "shipit",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Batch execution with subagent pipeline, TDD enforcement, code review, verification gate, PR description, and branch completion",
   "author": {
     "name": "Jugraj Singh",

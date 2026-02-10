@@ -1,6 +1,14 @@
 ---
 name: release
 description: Create a versioned release with semantic versioning
+allowed-tools:
+  - Bash(git *)
+  - Bash(pwd)
+  - Bash(SKIP=* git *)
+  - Read
+  - Edit
+  - Glob
+  - AskUserQuestion
 ---
 
 # Create Release
@@ -71,10 +79,10 @@ Common files to update:
 
 ### 6. Finish Release
 
-Use changelog content for tag message:
+Use changelog content for tag message. Skip pre-commit hooks that would reject the merge:
 
 ```bash
-git flow finish --tag -m "v<version>
+SKIP=no-commit-to-branch,conventional-commit git flow finish --tag -m "v<version>
 
 ## Added
 - Feature 1
@@ -83,6 +91,8 @@ git flow finish --tag -m "v<version>
 ## Fixed
 - Bug fix 1"
 ```
+
+> **Why SKIP?** The merge commit is mechanical—all code was already validated when committed to the release branch. The `no-commit-to-branch` and `conventional-commit` hooks would otherwise reject the merge.
 
 ### 7. Push
 
@@ -99,5 +109,5 @@ For urgent production fixes:
 git checkout main
 git flow hotfix start <name>
 # ... fix ...
-git flow finish --tag
+SKIP=no-commit-to-branch,conventional-commit git flow finish --tag
 ```

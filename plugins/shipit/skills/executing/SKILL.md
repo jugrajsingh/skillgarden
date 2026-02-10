@@ -1,6 +1,15 @@
 ---
 name: executing
 description: Batch execution with subagent pipeline — load plan, create native Tasks, run implement-review pipeline per batch
+allowed-tools:
+  - Read
+  - Write
+  - Edit
+  - Glob
+  - Grep
+  - Bash
+  - Task
+  - AskUserQuestion
 ---
 
 # Batch Execution Pipeline

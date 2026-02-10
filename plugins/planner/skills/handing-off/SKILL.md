@@ -1,6 +1,11 @@
 ---
 name: handing-off
 description: Generate session transfer document — decisions, open questions, blockers, next steps for the next session
+allowed-tools:
+  - Read
+  - Write
+  - Glob
+  - AskUserQuestion
 ---
 
 # Session Handoff
