@@ -10,18 +10,6 @@
   },
   "plugins": [
     {
-      "name": "branch-guardian",
-      "source": "./plugins/branch-guardian",
-      "description": "Enforces git-flow branch protection - blocks direct commits to main/develop",
-      "version": "0.1.0",
-      "author": {
-        "name": "Jugraj Singh",
-        "email": "jugrajskhalsa@gmail.com"
-      },
-      "category": "git",
-      "tags": ["git", "branch-protection", "git-flow"]
-    },
-    {
       "name": "pysmith",
       "source": "./plugins/pysmith",
       "description": "Python project scaffolding, configuration management, and best practices auditing with uv-native tooling",
@@ -61,7 +49,7 @@
       "name": "gitmastery",
       "source": "./plugins/gitmastery",
       "description": "Git workflow validation - enforces explicit file staging, conventional commits, and blocks AI footers",
-      "version": "0.2.0",
+      "version": "0.3.0",
       "author": {
         "name": "Jugraj Singh",
         "email": "jugrajskhalsa@gmail.com"

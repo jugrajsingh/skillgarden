@@ -1,6 +1,6 @@
 {
   "name": "gitmastery",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Git workflow validation - enforces explicit file staging, conventional commits, and blocks AI footers",
   "author": {
     "name": "Jugraj Singh",
