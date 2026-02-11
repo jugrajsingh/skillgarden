@@ -1,5 +1,5 @@
 ---
-name: release
+name: releasing
 description: Create a versioned release with semantic versioning
 allowed-tools:
   - Bash(git *)

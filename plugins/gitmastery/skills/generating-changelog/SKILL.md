@@ -1,5 +1,5 @@
 ---
-name: changelog
+name: generating-changelog
 description: Generate changelog from git commits following Keep a Changelog format
 allowed-tools:
   - Bash(git *)

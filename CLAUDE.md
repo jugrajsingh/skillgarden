@@ -198,25 +198,29 @@ When command says "Invoke the `plugin:deploy` skill", Claude's Skill tool finds 
 - Command and skill have **different** names
 - Or skill is self-contained (no delegation)
 
-### allowed-tools Not Enforced via Commands
+### allowed-tools Require Different Names
 
-`allowed-tools` in SKILL.md files are **NOT enforced** when users invoke skills via slash commands.
+`allowed-tools` in SKILL.md only load when the **skill name differs from the command name**.
 
-**Tested combinations (all fail to show tools):**
+**How it works:**
 
-| Invocation | Tools on Command | Tools on Skill | Tools shown? |
-|------------|-----------------|----------------|-------------|
-| `/slash-command` (same name) | No | Yes | NO |
-| `/slash-command` (same name) | Yes | No | NO |
-| `/slash-command` (different name) | No | Yes | NO |
-| `/slash-command` (different name) | Yes | No | NO |
-| `Skill("command-name")` | — | Yes | NO |
+When a command says "Invoke the `plugin:skill-name` skill", Claude may re-invoke via the Skill tool. The Skill tool resolves commands before skills — so if command and skill share the same namespaced name, it finds the command (no tools), not the skill.
 
-**Only works:** `Skill("skill-name")` where skill name differs from any command name.
+| Command Name | Skill Name | Namespaced Same? | Tools Load? |
+|-------------|------------|-------------------|-------------|
+| `pysmith:pyproject` | `generating-pyproject` | NO | YES |
+| `pysmith:setup` | `setting-up` | NO | YES |
+| `gitmastery:commit` | `commit` | YES (`gitmastery:commit`) | NO |
 
-**Root cause:** Command→skill delegation ("Invoke the skill") is prose — Claude follows the text instruction, it does not re-invoke via the Skill tool. The Skill tool resolves commands before skills when names collide.
+**Rule:** Always use different names for commands and skills.
 
-**Workaround:** If allowed-tools enforcement is needed, agents must call `Skill("plugin:unique-skill-name")` directly, where the skill name has no matching command.
+| Pattern | Example |
+|---------|---------|
+| Command filename | `commands/commit.md` (name: `plugin:commit`) |
+| Skill directory | `skills/committing/SKILL.md` (name: `committing`) |
+| Command invokes | "Invoke the `plugin:committing` skill" |
+
+**Why it works:** The Skill tool resolves `plugin:committing` → finds no command with that name → loads the skill → tools enforced.
 
 ## Editing Rules
 

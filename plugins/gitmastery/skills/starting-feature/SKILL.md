@@ -1,5 +1,5 @@
 ---
-name: feature
+name: starting-feature
 description: Start a new feature branch using git-flow
 allowed-tools:
   - Bash(git *)

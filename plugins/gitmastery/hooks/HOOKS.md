@@ -39,6 +39,8 @@ The previous approach used newlines, which broke multiline commit messages into 
 | Globs | `*.py`, `src/?` | contains a glob |
 | Directories | `src`, `.`, `tests/` | is a directory |
 
+Blocks ALL directories including submodules. For submodule pointer updates, use `git update-index --cacheinfo "160000,{HASH},submodule"` instead of `git add submodule`. The `update-index` command is not hooked by guard.sh.
+
 Uses `eval set --` for quote-aware tokenization.
 
 ## git_commit.sh Rules

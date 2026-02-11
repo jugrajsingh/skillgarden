@@ -1,5 +1,5 @@
 ---
-name: finish
+name: finishing
 description: Complete current git-flow branch (feature, release, or hotfix)
 allowed-tools:
   - Bash(git *)

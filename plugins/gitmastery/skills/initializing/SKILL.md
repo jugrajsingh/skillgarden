@@ -1,5 +1,5 @@
 ---
-name: init
+name: initializing
 description: Initialize git-flow configuration for a repository
 allowed-tools:
   - Bash(git *)

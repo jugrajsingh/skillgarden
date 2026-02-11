@@ -4,4 +4,4 @@ description: Start a new feature branch using git-flow
 argument-hint: "<branch-name>"
 ---
 
-Invoke the `gitmastery:feature` skill and follow it exactly.
+Invoke the `gitmastery:starting-feature` skill and follow it exactly.
