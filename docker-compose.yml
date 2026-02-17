@@ -39,6 +39,8 @@ services:
       - "6334:6334"
     volumes:
       - qdrant_data:/qdrant/storage
+    environment:
+      - QDRANT__TELEMETRY_DISABLED=true
     restart: unless-stopped
 
 volumes:
