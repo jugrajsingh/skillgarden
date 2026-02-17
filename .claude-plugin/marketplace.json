@@ -142,6 +142,18 @@
       "tags": ["grepai", "semantic-search", "mcp", "ollama", "postgres", "pgvector", "qdrant", "workspace", "docker"]
     },
     {
+      "name": "helmcraft",
+      "source": "./plugins/helmcraft",
+      "description": "Helm chart generation for Kubernetes workloads - batch workers, web services, CronJobs with production extras (KEDA, NetworkPolicy, PDB, ServiceMonitor)",
+      "version": "0.1.0",
+      "author": {
+        "name": "Jugraj Singh",
+        "email": "jugrajskhalsa@gmail.com"
+      },
+      "category": "devops",
+      "tags": ["helm", "kubernetes", "chart", "batch-worker", "web-service", "cronjob", "keda", "security"]
+    },
+    {
       "name": "skillforge",
       "source": "./plugins/skillforge",
       "description": "Skill design best practices - audit existing skills and create new ones with reference file patterns, modularization, and token-aware architecture",
