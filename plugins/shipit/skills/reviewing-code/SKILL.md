@@ -1,6 +1,6 @@
 ---
 name: reviewing-code
-description: Code review dispatch — gather diff, dispatch code-reviewer agent, present findings
+description: Use when code changes need review — gathers diff, dispatches code-reviewer agent, and presents structured findings
 allowed-tools:
   - Bash(git *)
   - Read

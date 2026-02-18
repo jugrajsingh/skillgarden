@@ -1,6 +1,6 @@
 ---
 name: shipping
-description: Branch completion — pre-ship checks, 4-option choice (merge, PR, keep, discard), cleanup
+description: Use when a feature branch is complete and ready to be merged, PRed, kept, or discarded
 allowed-tools:
   - Bash(git *)
   - Bash(gh *)
