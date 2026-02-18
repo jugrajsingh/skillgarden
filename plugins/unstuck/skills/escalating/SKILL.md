@@ -1,6 +1,6 @@
 ---
 name: escalating
-description: Strike 3 — broader rethink, external search, and structured user escalation
+description: Use when entering Strike 3 of the unstuck protocol — two targeted attempts have failed and the issue needs broader rethink or user escalation
 allowed-tools:
   - Read
   - Glob

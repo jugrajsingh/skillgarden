@@ -1,6 +1,6 @@
 ---
 name: pivoting
-description: Strike 2 — alternative approach when initial diagnosis failed
+description: Use when entering Strike 2 of the unstuck protocol — initial diagnosis failed and you need a fundamentally different approach
 allowed-tools:
   - Read
   - Glob

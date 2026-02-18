@@ -1,6 +1,6 @@
 ---
 name: diagnosing
-description: Strike 1 — root cause investigation with evidence gathering and hypothesis testing
+description: Use when starting Strike 1 of the unstuck protocol — a bug or failure needs systematic root cause investigation with evidence gathering
 allowed-tools:
   - Read
   - Glob
