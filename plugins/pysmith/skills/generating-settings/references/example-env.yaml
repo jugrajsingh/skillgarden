@@ -1,0 +1,75 @@
+# =============================================================================
+# Application Configuration
+# =============================================================================
+# Copy to local.env.yaml and customize for your environment.
+# Priority: Environment variables > YAML values > defaults
+#
+# Environment variable mapping:
+#   POSTGRES__HOST=myhost  ->  settings.postgres.host
+#   AWS__AWS_REGION=us-west-2  ->  settings.aws.aws_region
+# =============================================================================
+
+environment: local
+debug: true
+
+# -----------------------------------------------------------------------------
+# PostgreSQL
+# -----------------------------------------------------------------------------
+postgres:
+  host: localhost
+  port: 5432
+  database: myapp
+  user: postgres
+  password: ""
+
+# -----------------------------------------------------------------------------
+# Redis
+# -----------------------------------------------------------------------------
+redis:
+  host: localhost
+  port: 6379
+  db: 0
+  password: null
+
+# -----------------------------------------------------------------------------
+# AWS
+# -----------------------------------------------------------------------------
+aws:
+  aws_region: us-east-2
+  endpoint_url: http://localhost:4566  # LocalStack for local dev
+
+# -----------------------------------------------------------------------------
+# Elasticsearch
+# -----------------------------------------------------------------------------
+elasticsearch:
+  hosts:
+    - http://localhost:9200
+  username: null
+  password: null
+  verify_certs: false
+
+# -----------------------------------------------------------------------------
+# Sentry
+# -----------------------------------------------------------------------------
+sentry:
+  dsn: null  # Set in production
+  environment: local
+  traces_sample_rate: 0.1
+
+# -----------------------------------------------------------------------------
+# Logging
+# -----------------------------------------------------------------------------
+logging:
+  level: DEBUG
+  format: console  # console for dev, json for production
+  show_timestamps: true
+
+# -----------------------------------------------------------------------------
+# API
+# -----------------------------------------------------------------------------
+api:
+  host: 0.0.0.0
+  port: 8000
+  debug: true
+  cors_origins:
+    - "*"
