@@ -1,6 +1,6 @@
 ---
 name: dispatching
-description: Generic parallel agent dispatch for independent problems — verify independence, dispatch, merge results
+description: Use when you have 2+ independent problems that can be investigated in parallel by separate agents
 allowed-tools:
   - Read
   - Write
@@ -105,54 +105,11 @@ Wait for all Task agents to complete. Track status:
 
 For failed agents, include the failure reason in the merged output.
 
-## Step 5: Flag Conflicts
+## Steps 5-7: Conflict Detection, Merge, and Resolution
 
-Compare results across agents. Flag conflicts when:
+Compare results across agents, flag contradictions, merge into single document, and ask user to resolve conflicts.
 
-- Two agents report contradictory findings about the same code
-- Two agents reach different conclusions about the same behavior
-- File citations disagree on what code does
-
-Present conflicts clearly:
-
-```text
-## Conflict Detected
-
-Agent 1 (Problem: X) says: {finding}
-Agent 2 (Problem: Y) says: {contradictory finding}
-
-Both reference: path/to/file.py:42
-```
-
-## Step 6: Merge Results
-
-Combine all agent outputs into a single document:
-
-```text
-## Dispatch Results
-
-### Problem 1: {statement}
-{agent output}
-
-### Problem 2: {statement}
-{agent output}
-
-### Conflicts (if any)
-{conflict details}
-```
-
-## Step 7: Present and Resolve
-
-Present merged results. If conflicts exist, ask user to resolve:
-
-```yaml
-- question: "Conflicts detected between agents. How should I resolve?"
-  options:
-    - "Keep Agent 1's finding"
-    - "Keep Agent 2's finding"
-    - "Investigate further"
-    - "Keep both with caveat"
-```
+Full procedures and templates: `references/conflict-and-merge.md`
 
 ## Rules
 
