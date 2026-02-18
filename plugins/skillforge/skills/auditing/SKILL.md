@@ -1,6 +1,6 @@
 ---
 name: auditing
-description: Audit a skill against design best practices - structure, modularization, token efficiency, reference file patterns, and known gotchas.
+description: Use when you need to audit a skill against design best practices, token efficiency, and known gotchas
 allowed-tools:
   - Read
   - Glob
