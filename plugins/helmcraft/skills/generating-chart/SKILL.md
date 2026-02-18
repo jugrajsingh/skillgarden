@@ -1,6 +1,6 @@
 ---
 name: generating-chart
-description: Generate or customize a Helm chart for Kubernetes workloads. Supports batch workers (poll-then-exit), web services, and CronJobs with optional production extras (KEDA, NetworkPolicy, PDB, ServiceMonitor).
+description: Use when you need to generate or customize a Helm chart for batch workers, web services, or CronJobs with production extras
 allowed-tools:
   - Read
   - Write
@@ -60,25 +60,9 @@ Present via AskUserQuestion (multiSelect: true):
 
 ### 4. Detect Config Patterns
 
-Scan project files to auto-populate configmap/secrets keys:
+Scan project files to auto-populate configmap/secrets keys and detect language/probe commands.
 
-```text
-Glob: config/settings.py, config/settings.yaml, src/**/settings.py
-```
-
-For Python (Pydantic Settings):
-
-- Extract nested model classes (AWSSettings, SQSSettings, etc.)
-- Map to env vars with `__` delimiter: `AWS__AWS_REGION`, `SQS__INPUT_QUEUE`
-- Separate sensitive fields (passwords, keys, tokens) -> secrets
-- Non-sensitive fields -> configmap
-
-```text
-Glob: Dockerfile, pyproject.toml, package.json, go.mod
-```
-
-- Detect language for probe commands
-- Detect ENTRYPOINT for exec probe command (e.g., `pgrep -f main.py`)
+Full detection logic: `references/config-detection.md`
 
 ### 5. Load References
 
@@ -94,44 +78,9 @@ Read the following reference files based on selections:
 
 ### 6. Generate Mode
 
-#### 6a. Run `helm create chart`
+Run `helm create chart`, then apply workload-specific customizations (batch worker, web service, or CronJob) and production extras.
 
-```bash
-helm create chart
-```
-
-#### 6b. Apply Customizations
-
-Read `references/helm-create-customizations.md` for the removal/modification checklist.
-
-**Batch worker customizations:**
-
-1. Remove: `templates/service.yaml`, `templates/ingress.yaml`, `templates/hpa.yaml`, `templates/serviceaccount.yaml`, `templates/tests/`
-2. Remove from values.yaml: `service`, `ingress`, `httpRoute`, `autoscaling`, `serviceAccount`, `volumes`, `volumeMounts`, `podLabels`
-3. Rewrite deployment.yaml: remove ports, change probes to exec, add envFrom, add checksum annotations
-4. Rename _helpers.tpl definitions from `chart` to project name
-5. Add: `templates/configmap.yaml`, `templates/secrets.yaml`
-6. Rewrite: `templates/NOTES.txt` for batch worker operations
-7. Set values.yaml: `replicaCount: 0`, securityContext, exec livenessProbe, resources, nodeSelector, configmap, secrets
-
-**Web service customizations:**
-
-1. Keep: `templates/service.yaml`, optionally `templates/ingress.yaml`
-2. Remove: `templates/hpa.yaml`, `templates/serviceaccount.yaml`, `templates/tests/`
-3. Configure HTTP probes (`/healthz` or detected health endpoint)
-4. Add: configmap.yaml, secrets.yaml, envFrom in deployment
-5. Set values.yaml: `replicaCount: 1`, service config, HTTP probes
-
-**CronJob customizations:**
-
-1. Remove: `templates/deployment.yaml`, `templates/service.yaml`, `templates/ingress.yaml`, `templates/hpa.yaml`, `templates/serviceaccount.yaml`, `templates/tests/`
-2. Create: `templates/cronjob.yaml` using container spec from reference
-3. Add: configmap.yaml, secrets.yaml
-4. Set values.yaml: schedule, concurrencyPolicy, history limits
-
-#### 6c. Generate Production Extras
-
-If any extras selected, read `references/production-extras.md` and create the corresponding template files.
+Full customization checklists per workload type: `references/generate-mode.md`
 
 ### 7. Customize Mode
 

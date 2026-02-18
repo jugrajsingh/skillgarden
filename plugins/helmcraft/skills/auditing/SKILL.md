@@ -1,6 +1,6 @@
 ---
 name: auditing
-description: Audit Helm chart against security, best practices, and production readiness checklist. Reports findings with severity levels and offers fixes.
+description: Use when you need to audit a Helm chart against security, best practices, and production readiness
 allowed-tools:
   - Read
   - Glob
