@@ -1,0 +1,37 @@
+# =============================================================================
+# .dockerignore - Exclude from Docker build context
+# =============================================================================
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Local configuration (secrets)
+*.env
+*.env.*
+!*.env.example
+local.*.yaml
+
+# Development files
+Makefile.local
+Makefile.deploy
+tests/
+docs/
+*.md
+!README.md
+
+# Docker (prevent recursive context)
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# Language-specific exclusions added below
+{language_specific_ignores}

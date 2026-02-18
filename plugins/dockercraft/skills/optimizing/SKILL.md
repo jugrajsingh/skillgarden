@@ -1,6 +1,6 @@
 ---
 name: optimizing
-description: Analyze Docker image layers and suggest optimizations for size reduction, build speed, and caching efficiency.
+description: Use when Docker images are too large, builds are slow, or layer caching is inefficient and needs optimization
 allowed-tools:
   - Read
   - Write

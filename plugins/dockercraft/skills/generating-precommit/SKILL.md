@@ -1,6 +1,6 @@
 ---
 name: generating-precommit
-description: Generate pre-commit hooks for Dockerfile linting with hadolint
+description: Use when adding Dockerfile linting to pre-commit configuration, or when Dockerfiles need automated quality checks via hadolint
 allowed-tools:
   - Read
   - Write

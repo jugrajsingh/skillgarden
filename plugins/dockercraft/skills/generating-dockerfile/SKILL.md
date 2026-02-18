@@ -1,6 +1,6 @@
 ---
 name: generating-dockerfile
-description: Generate optimized Dockerfile and .dockerignore for any project. Detects project language(s) and applies appropriate build strategies.
+description: Use when a project needs a Dockerfile and .dockerignore with multi-stage builds, or when containerizing a Python, Node.js, Go, Rust, or Java project
 allowed-tools:
   - Read
   - Write
@@ -78,47 +78,7 @@ If no language files found:
 
 ### 5. Generate .dockerignore
 
-Universal .dockerignore (language-specific additions from reference files):
-
-```dockerignore
-# =============================================================================
-# .dockerignore - Exclude from Docker build context
-# =============================================================================
-
-# Git
-.git/
-.gitignore
-.gitattributes
-
-# IDE
-.idea/
-.vscode/
-*.swp
-*.swo
-*~
-
-# Local configuration (secrets)
-*.env
-*.env.*
-!*.env.example
-local.*.yaml
-
-# Development files
-Makefile.local
-Makefile.deploy
-tests/
-docs/
-*.md
-!README.md
-
-# Docker (prevent recursive context)
-Dockerfile*
-docker-compose*.yml
-.dockerignore
-
-# Language-specific exclusions added below
-{language_specific_ignores}
-```
+Read `references/dockerignore-template` for the universal base. Append language-specific exclusions from the loaded language reference file.
 
 ### 6. Report
 

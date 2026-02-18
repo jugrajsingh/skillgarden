@@ -1,6 +1,6 @@
 ---
 name: setting-up
-description: Orchestrate complete Docker environment setup by generating Dockerfile, .dockerignore, and docker-compose.yml, then optionally starting services.
+description: Use when bootstrapping a project's Docker environment from scratch, needing Dockerfile, .dockerignore, and docker-compose.yml in one pass
 allowed-tools:
   - Read
   - Glob
