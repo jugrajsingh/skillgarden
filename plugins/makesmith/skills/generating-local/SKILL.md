@@ -1,6 +1,6 @@
 ---
 name: generating-local
-description: Generate Makefile.local with local development targets for Python projects. Supports configurable venv location (project-local .venv recommended, or centralized ~/.venvs/).
+description: Use when a Python project needs a Makefile.local for local development targets (test, lint, format, setup) with configurable venv location
 allowed-tools:
   - Read
   - Write
@@ -122,47 +122,10 @@ Usage:
   make -f Makefile.local quality       # Check code
 ```
 
-## Integration with Other Skills
+## Integration
 
-Other skills should use Makefile.local commands:
+Other skills should use Makefile.local commands instead of raw uv commands (`make -f Makefile.local test` instead of `uv run pytest`). This ensures consistent venv location and PYTHONPATH.
 
-```bash
-# Instead of: uv sync
-make -f Makefile.local install-dev
+## Custom Targets
 
-# Instead of: uv run pytest
-make -f Makefile.local test
-
-# Instead of: uv run ruff check .
-make -f Makefile.local lint
-```
-
-This ensures consistent venv location and PYTHONPATH regardless of configuration.
-
-## Adding Custom Targets
-
-Users can add project-specific targets:
-
-```makefile
-# =============================================================================
-# Application
-# =============================================================================
-.PHONY: run run-dev
-
-run:  ## Run the application
- uv run python main.py
-
-run-dev:  ## Run with auto-reload
- uv run python main.py --reload
-
-# =============================================================================
-# Infrastructure
-# =============================================================================
-.PHONY: infra-up infra-down
-
-infra-up:  ## Start Docker services
- docker compose up -d --wait
-
-infra-down:  ## Stop Docker services
- docker compose down
-```
+Users can add project-specific targets (run, run-dev, infra-up, infra-down) to the Application or Infrastructure sections following the same `.PHONY` + `## description` pattern.

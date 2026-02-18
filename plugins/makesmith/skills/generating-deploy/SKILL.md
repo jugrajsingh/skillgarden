@@ -1,6 +1,6 @@
 ---
 name: generating-deploy
-description: Generate Makefile.deploy with DevOps targets for building, pushing, and deploying Docker images via Helm/kubectl. Supports multi-registry tag-on-push and per-pipeline deployments.
+description: Use when a project needs DevOps targets for building Docker images, pushing to registries (GCR/ECR/ACR), and deploying via Helm, kubectl, or Docker Compose
 allowed-tools:
   - Read
   - Write
@@ -85,97 +85,15 @@ Read ONLY the reference file matching the user's deployment target choice:
 
 ### 6. Generate Makefile.deploy
 
-Compose the file using the common sections below plus deployment targets from the loaded reference.
+Read `references/common-template.makefile` for the base structure (header, build, push, utilities).
 
-#### Common Header
+Customize the template:
 
-```makefile
-# =============================================================================
-# Makefile.deploy - DevOps Commands
-# =============================================================================
-# Usage: make -f Makefile.deploy <target>
-# Help:  make -f Makefile.deploy help
-# =============================================================================
-
-# Project configuration
-IMAGE_NAME := {project_name}
-VERSION := $(shell git describe --tags --always 2>/dev/null || echo "latest")
-
-.DEFAULT_GOAL := help
-```
-
-#### Common Targets
-
-```makefile
-# =============================================================================
-# Info
-# =============================================================================
-
-help:  ## Show available targets
- @grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-25s\033[0m %s\n", $$1, $$2}'
-
-version:  ## Show current version
- @echo "Image: $(IMAGE_NAME):$(VERSION)"
-
-# =============================================================================
-# Docker Build (local tag only)
-# =============================================================================
-
-build-image:  ## Build Docker image (local tag only)
- @echo "Building $(IMAGE_NAME):$(VERSION)..."
- docker build -t $(IMAGE_NAME):$(VERSION) .
-
-query-image-size:  ## Show Docker image size
- @docker images $(IMAGE_NAME):$(VERSION) --format "Size: {{.Size}}"
-
-# =============================================================================
-# Push (tag-on-push pattern: tag for registry + push)
-# =============================================================================
-
-push-image-gcr:  ## Tag and push to GCR
- docker tag $(IMAGE_NAME):$(VERSION) $(GCR_REGISTRY)/$(IMAGE_NAME):$(VERSION)
- docker push $(GCR_REGISTRY)/$(IMAGE_NAME):$(VERSION)
-
-push-image-ecr:  ## Tag and push to ECR
- docker tag $(IMAGE_NAME):$(VERSION) $(ECR_REGISTRY)/$(IMAGE_NAME):$(VERSION)
- docker push $(ECR_REGISTRY)/$(IMAGE_NAME):$(VERSION)
-
-push-image-acr:  ## Tag and push to ACR
- docker tag $(IMAGE_NAME):$(VERSION) $(ACR_REGISTRY)/$(IMAGE_NAME):$(VERSION)
- docker push $(ACR_REGISTRY)/$(IMAGE_NAME):$(VERSION)
-
-push-image: push-image-{default_registry}  ## Push to default registry
-
-build-and-push: build-image push-image  ## Build and push to default registry
-```
-
-Only include push targets for registries the user selected. Include registry variables for selected registries:
-
-```makefile
-# Container Registries (include only selected)
-GCR_REGISTRY := gcr.io/{gcp_project}
-ECR_REGISTRY := {aws_account_id}.dkr.ecr.{region}.amazonaws.com
-ACR_REGISTRY := {acr_name}.azurecr.io
-```
-
-#### Deployment Targets
-
-Insert the deployment targets from the loaded reference file. For one-to-many deployments, use the multi-deployment section from the reference.
-
-#### Utilities
-
-```makefile
-# =============================================================================
-# Utilities
-# =============================================================================
-
-leaks:  ## Scan for secrets with gitleaks
- @echo "Scanning for secrets..."
- gitleaks detect --source . --verbose
-
-git-flow-release-finish:  ## Finish current git-flow release
- git flow finish --tag
-```
+- Replace `{project_name}` with detected project name
+- Include only push targets for user-selected registries (remove others)
+- Include only registry variables for selected registries
+- Insert deployment targets from the loaded reference file (step 5)
+- For one-to-many deployments, use the multi-deployment section from the reference
 
 ### 7. Report
 
@@ -203,37 +121,11 @@ Usage:
   make -f Makefile.deploy build-push-deploy
 ```
 
-## Registry Login Commands
+## Registry Login
 
-**GCR (Google):**
-
-```bash
-gcloud auth configure-docker gcr.io --quiet
-```
-
-**ECR (AWS):**
-
-```bash
-aws ecr get-login-password --region us-east-1 | \
-  docker login --username AWS --password-stdin 123456789.dkr.ecr.us-east-1.amazonaws.com
-```
-
-**ACR (Azure):**
-
-```bash
-az acr login --name myregistry
-```
-
-**DockerHub:**
-
-```bash
-docker login
-```
-
-## Deployment Reference Files
-
-Each deployment method is defined in its own reference file under `references/`:
-
-- `references/helm.md` - Helm charts with define macros and multi-pipeline support
-- `references/kubectl.md` - Raw Kubernetes manifests with rolling updates
-- `references/compose.md` - Docker Compose over SSH for remote servers
+| Registry | Command |
+|----------|---------|
+| GCR | `gcloud auth configure-docker gcr.io --quiet` |
+| ECR | `aws ecr get-login-password --region REGION \| docker login --username AWS --password-stdin ACCOUNT.dkr.ecr.REGION.amazonaws.com` |
+| ACR | `az acr login --name REGISTRY` |
+| DockerHub | `docker login` |
