@@ -4,4 +4,4 @@ description: Generate CLAUDE.md hierarchy - root + module-level files throughout
 argument-hint: "[path]"
 ---
 
-Invoke the `claudemd:init` skill and follow it exactly.
+Invoke the `claudemd:initializing` skill and follow it exactly.
