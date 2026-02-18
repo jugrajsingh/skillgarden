@@ -217,7 +217,8 @@ git -C submodule rev-parse HEAD
 
 ```bash
 # Stage the pointer update (160000 = gitlink mode)
-git update-index --cacheinfo "160000,{HASH},submodule"
+# Use --add if submodule is new to the index, omit for existing
+git update-index --add --cacheinfo "160000,{HASH},submodule"
 ```
 
 ```bash
@@ -290,8 +291,8 @@ cd submodule && git status
 # WRONG: git add for submodule (hook blocks directories)
 git add esalchemy
 
-# RIGHT: update-index for submodule pointer
-git update-index --cacheinfo "160000,abc123,esalchemy"
+# RIGHT: update-index for submodule pointer (--add for new submodules)
+git update-index --add --cacheinfo "160000,abc123,esalchemy"
 
 # WRONG: Body only in dialog, not in commit
 git commit -m "feat: add feature"  # Missing body that was shown in AskUserQuestion
