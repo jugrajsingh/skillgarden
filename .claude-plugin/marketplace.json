@@ -13,7 +13,7 @@
       "name": "pysmith",
       "source": "./plugins/pysmith",
       "description": "Python project scaffolding, configuration management, and best practices auditing with uv-native tooling",
-      "version": "0.1.0",
+      "version": "0.1.0+g4a9cc13",
       "author": {
         "name": "Jugraj Singh",
         "email": "jugrajskhalsa@gmail.com"
@@ -25,7 +25,7 @@
       "name": "makesmith",
       "source": "./plugins/makesmith",
       "description": "Makefile generation for local development, deployment, and root orchestration with audit capabilities",
-      "version": "0.2.0",
+      "version": "0.2.0+g8441310",
       "author": {
         "name": "Jugraj Singh",
         "email": "jugrajskhalsa@gmail.com"
@@ -37,7 +37,7 @@
       "name": "dockercraft",
       "source": "./plugins/dockercraft",
       "description": "Docker best practices: language-aware Dockerfile generation, compose orchestration, security auditing, and image optimization",
-      "version": "0.2.0",
+      "version": "0.2.0+g9c99821",
       "author": {
         "name": "Jugraj Singh",
         "email": "jugrajskhalsa@gmail.com"
@@ -49,7 +49,7 @@
       "name": "gitmastery",
       "source": "./plugins/gitmastery",
       "description": "Git workflow validation - enforces explicit file staging, conventional commits, and blocks AI footers",
-      "version": "0.4.0",
+      "version": "0.4.0+g765a325",
       "author": {
         "name": "Jugraj Singh",
         "email": "jugrajskhalsa@gmail.com"
@@ -61,7 +61,7 @@
       "name": "claudemd",
       "source": "./plugins/claudemd",
       "description": "CLAUDE.md lifecycle management - init, audit, sync, and optimize project context files",
-      "version": "0.1.1",
+      "version": "0.1.1+gebfca62",
       "author": {
         "name": "Jugraj Singh",
         "email": "jugrajskhalsa@gmail.com"
@@ -73,7 +73,7 @@
       "name": "unstuck",
       "source": "./plugins/unstuck",
       "description": "Structured error escalation protocol - diagnose, pivot, rethink, escalate when stuck on a problem",
-      "version": "0.1.1",
+      "version": "0.1.1+g7f5b2b1",
       "author": {
         "name": "Jugraj Singh",
         "email": "jugrajskhalsa@gmail.com"
@@ -97,7 +97,7 @@
       "name": "researcher",
       "source": "./plugins/researcher",
       "description": "Parallel sub-agent research with persistent reports, evidence-backed analysis, and generic dispatch",
-      "version": "0.1.1",
+      "version": "0.1.1+gaef11cd",
       "author": {
         "name": "Jugraj Singh",
         "email": "jugrajskhalsa@gmail.com"
@@ -109,7 +109,7 @@
       "name": "tidyup",
       "source": "./plugins/tidyup",
       "description": "Codebase cleanup and hygiene - dead code detection, duplication scan, staleness check, safe removal with archiving",
-      "version": "0.1.1",
+      "version": "0.1.1+g5e6dff8",
       "author": {
         "name": "Jugraj Singh",
         "email": "jugrajskhalsa@gmail.com"
@@ -120,14 +120,14 @@
     {
       "name": "shipit",
       "source": "./plugins/shipit",
-      "description": "Batch execution with subagent pipeline, TDD enforcement, code review, verification gate, PR description, and branch completion",
-      "version": "0.1.1",
+      "description": "Batch execution with subagent pipeline, TDD enforcement, code review (Claude-native and Codex-powered), verification gate, PR description, and branch completion",
+      "version": "0.2.0",
       "author": {
         "name": "Jugraj Singh",
         "email": "jugrajskhalsa@gmail.com"
       },
       "category": "execution",
-      "tags": ["execution", "tdd", "code-review", "verification", "shipping", "pull-request", "subagents"]
+      "tags": ["execution", "tdd", "code-review", "codex", "mcp", "verification", "shipping", "pull-request", "subagents"]
     },
     {
       "name": "grepai",
@@ -145,7 +145,7 @@
       "name": "helmcraft",
       "source": "./plugins/helmcraft",
       "description": "Helm chart generation for Kubernetes workloads - batch workers, web services, CronJobs with production extras (KEDA, NetworkPolicy, PDB, ServiceMonitor)",
-      "version": "0.1.0",
+      "version": "0.1.0+g5e14753",
       "author": {
         "name": "Jugraj Singh",
         "email": "jugrajskhalsa@gmail.com"
@@ -157,7 +157,7 @@
       "name": "skillforge",
       "source": "./plugins/skillforge",
       "description": "Skill design best practices - audit existing skills and create new ones with reference file patterns, modularization, and token-aware architecture",
-      "version": "0.1.0",
+      "version": "0.1.0+gf2e299f",
       "author": {
         "name": "Jugraj Singh",
         "email": "jugrajskhalsa@gmail.com"

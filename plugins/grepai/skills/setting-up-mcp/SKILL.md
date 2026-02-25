@@ -1,6 +1,6 @@
 ---
-name: mcp-setup
-description: Configure grepai MCP server for Claude Code, Cursor, or Windsurf with scope and workspace options.
+name: setting-up-mcp
+description: Use when you need to register or update the GrepAI MCP server in Claude Code, Cursor, or Windsurf
 allowed-tools:
   - Read
   - Glob
@@ -109,87 +109,9 @@ Which workspace?
 
 ### 5. Generate Configuration
 
-Determine the grepai binary path:
+Determine grepai binary path (`which grepai`). For Claude Code: use `claude mcp add` with scope (user/project) and optional `--workspace {NAME}`. For Cursor/Windsurf/Generic: write JSON to IDE-specific `.mcp.json` file, merging into existing config if present.
 
-```bash
-which grepai
-```
-
-#### For Claude Code — `claude mcp add`
-
-**User scope:**
-
-```bash
-claude mcp add grepai -s user -- grepai mcp-serve {ARGS}
-```
-
-**Project scope:**
-
-```bash
-claude mcp add grepai -s project -- grepai mcp-serve {ARGS}
-```
-
-**Where `{ARGS}` is:**
-
-- No workspace: empty (auto-detects from cwd)
-- With workspace: `--workspace {NAME}`
-- With explicit path: `{PROJECT_PATH}`
-
-#### For `.mcp.json` (project root, Cursor, Windsurf, Generic)
-
-Determine the target file:
-
-- Cursor: `.cursor/mcp.json`
-- Windsurf: `.windsurf/mcp.json`
-- Generic / Project .mcp.json: `.mcp.json`
-
-Write the JSON config:
-
-```json
-{
-  "mcpServers": {
-    "grepai": {
-      "command": "grepai",
-      "args": ["mcp-serve"]
-    }
-  }
-}
-```
-
-**With workspace:**
-
-```json
-{
-  "mcpServers": {
-    "grepai": {
-      "command": "grepai",
-      "args": ["mcp-serve", "--workspace", "{NAME}"]
-    }
-  }
-}
-```
-
-**With explicit project path:**
-
-```json
-{
-  "mcpServers": {
-    "grepai": {
-      "command": "grepai",
-      "args": ["mcp-serve", "{PROJECT_PATH}"]
-    }
-  }
-}
-```
-
-If the target JSON file already exists, read it first and merge the `grepai` key into the existing `mcpServers` object. Do not overwrite other MCP servers.
-
-#### Create parent directories if needed
-
-```bash
-mkdir -p .cursor   # for Cursor
-mkdir -p .windsurf # for Windsurf
-```
+See references/mcp-configs.md for `claude mcp add` commands, JSON templates (basic, workspace, explicit path), and IDE target file paths.
 
 ### 6. Add to .gitignore (if applicable)
 
@@ -215,33 +137,4 @@ Note: The MCP server connects on next IDE session start, not immediately.
 
 ### 8. Print Summary
 
-```text
-============================================================================
-GrepAI MCP Server Configured
-============================================================================
-
-IDE:        {IDE}
-Scope:      {SCOPE}
-Config:     {FILE_PATH}
-Command:    grepai mcp-serve {ARGS}
-Workspace:  {NAME or "none"}
-
-The MCP server will be available in your next {IDE} session.
-It exposes these tools:
-
-  grepai_search         — Semantic code search
-  grepai_trace_callers  — Find all callers of a function
-  grepai_trace_callees  — Find all callees of a function
-  grepai_trace_graph    — Build call graph around a symbol
-  grepai_index_status   — Check index health
-
-{IF WORKSPACE}
-Workspace mode is enabled. The agent will automatically search
-across all {N} projects in the "{NAME}" workspace without needing
-to specify the workspace parameter.
-{END IF}
-
-To verify after restart:
-  claude mcp list       # Claude Code
-============================================================================
-```
+Print IDE, scope, config path, command, workspace status, exposed MCP tools, and verification command. See references/mcp-configs.md for the summary template.

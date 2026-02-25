@@ -2,6 +2,16 @@
 
 All notable changes to the **shipit** plugin.
 
+## [0.2.0] - 2026-02-25
+
+### Added
+
+- codex-review command and codex-reviewing skill for Codex-powered code review via MCP
+- .mcp.json to auto-register Codex MCP server with the plugin
+- Support for full codebase, diff-based, and file-specific review scopes
+- Optional model and reasoning effort overrides
+- Follow-up conversation via codex-reply thread continuity
+
 ## [Unreleased]
 
 ### Changed
