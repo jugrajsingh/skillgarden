@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased] - 2026-02-17
+
+### Added
+
+- Helm chart generation plugin for Kubernetes workloads — batch workers, web services, CronJobs with production extras (helmcraft)
+
+### Changed
+
+- Rename gitmastery skills to differ from commands, enabling allowed-tools loading
+- Use --no-verify flag from git-flow-next v1.0.0 (gitmastery)
+- Reorder pre-commit hooks: autofix first to minimize retries
+- Disable Qdrant telemetry reporting in Docker Compose
+
+### Fixed
+
+- Use correct pre-commit hook id in SKIP env var (gitmastery)
+- Remove outdated postgres bug workarounds (grepai)
+
 ## [0.6.0] - 2026-02-10
 
 ### Added
