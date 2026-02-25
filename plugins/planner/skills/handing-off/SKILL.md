@@ -1,6 +1,6 @@
 ---
 name: handing-off
-description: Generate session transfer document — decisions, open questions, blockers, next steps for the next session
+description: Use when ending a session and need to document decisions, open questions, and blockers so the next session can resume with full context
 allowed-tools:
   - Read
   - Write

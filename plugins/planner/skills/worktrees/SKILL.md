@@ -1,6 +1,6 @@
 ---
 name: worktrees
-description: Git worktree isolation — create worktree, detect project setup, run baseline tests
+description: Use when starting isolated development on a branch and need a git worktree with auto-detected project setup and baseline test verification
 allowed-tools:
   - Bash(git *)
   - Bash(cd *)
@@ -115,59 +115,15 @@ If the worktree already exists at that path, report it and skip creation.
 
 ## Step 4: Auto-Detect and Run Project Setup
 
-Check for manifest files in the worktree:
-
-```bash
-ls {WORKTREE_DIR}/{BRANCH_NAME}/package.json {WORKTREE_DIR}/{BRANCH_NAME}/pyproject.toml {WORKTREE_DIR}/{BRANCH_NAME}/Cargo.toml {WORKTREE_DIR}/{BRANCH_NAME}/go.mod 2>/dev/null
-```
-
-Run the appropriate setup based on what is found:
-
-| Manifest | Setup Command |
-|----------|--------------|
-| package.json | `cd {WORKTREE_PATH} && npm install` |
-| pyproject.toml | `cd {WORKTREE_PATH} && pip install -e .` |
-| Cargo.toml | `cd {WORKTREE_PATH} && cargo build` |
-| go.mod | `cd {WORKTREE_PATH} && go mod download` |
-| requirements.txt | `cd {WORKTREE_PATH} && pip install -r requirements.txt` |
-
-If no manifest found, report: "No package manifest detected. Skipping auto-setup."
-
-If setup fails, report the error but continue — the worktree is still usable.
+Check for manifest files (package.json, pyproject.toml, Cargo.toml, go.mod) and run appropriate setup command. See references/setup-detection.md for manifest-to-command mapping.
 
 ## Step 5: Run Baseline Tests
 
-Detect the test runner from the project:
-
-| Indicator | Test Command |
-|-----------|-------------|
-| pyproject.toml with pytest | `cd {WORKTREE_PATH} && pytest --tb=short -q` |
-| package.json with test script | `cd {WORKTREE_PATH} && npm test` |
-| Cargo.toml | `cd {WORKTREE_PATH} && cargo test` |
-| go.mod | `cd {WORKTREE_PATH} && go test ./...` |
-
-Run tests and capture the result. Report pass/fail counts.
-
-If tests fail, report which tests failed — this establishes the baseline so new failures can be distinguished.
-
-If no test runner detected, report: "No test runner detected. Skipping baseline tests."
+Detect test runner from project manifests and run tests. Report pass/fail counts to establish baseline. See references/setup-detection.md for test runner detection table.
 
 ## Step 6: Report
 
-```text
-## Worktree Ready
-
-Branch:   {BRANCH_NAME}
-Location: {WORKTREE_DIR}/{BRANCH_NAME}
-Setup:    {setup result or "skipped"}
-Tests:    {pass}/{total} passing ({fail} failures)
-
-To work in the worktree:
-  cd {WORKTREE_DIR}/{BRANCH_NAME}
-
-To remove later:
-  git worktree remove {WORKTREE_DIR}/{BRANCH_NAME}
-```
+Print branch name, location, setup result, and test results. Include cd and removal commands. See references/setup-detection.md for report template.
 
 ## Rules
 
