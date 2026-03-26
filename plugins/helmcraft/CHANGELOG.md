@@ -2,7 +2,13 @@
 
 All notable changes to the **helmcraft** plugin.
 
-## [Unreleased]
+## [0.1.1] - 2026-03-26
+
+### Fixed
+
+- Restored AskUserQuestion to skill allowed-tools (generating-chart)
+
+## [0.1.0] - 2026-02-25
 
 ### Changed
 
