@@ -1,6 +1,6 @@
 {
   "name": "unstuck",
-  "version": "0.1.1+g7f5b2b1",
+  "version": "0.1.2+gd07cf3a",
   "description": "Structured error escalation protocol - diagnose, pivot, rethink, escalate when stuck on a problem",
   "author": {
     "name": "Jugraj Singh",

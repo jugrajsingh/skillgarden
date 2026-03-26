@@ -1,6 +1,6 @@
 {
   "name": "makesmith",
-  "version": "0.2.0+g8441310",
+  "version": "0.2.1+g1f64c9a",
   "description": "Makefile generation for local development, deployment, and root orchestration with audit capabilities",
   "author": {
     "name": "Jugraj Singh",

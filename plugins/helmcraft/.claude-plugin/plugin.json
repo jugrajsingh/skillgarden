@@ -1,6 +1,6 @@
 {
   "name": "helmcraft",
-  "version": "0.1.0+g5e14753",
+  "version": "0.1.1+g7dd0171",
   "description": "Helm chart generation for Kubernetes workloads - batch workers, web services, and CronJobs with production extras",
   "author": {
     "name": "Jugraj Singh",

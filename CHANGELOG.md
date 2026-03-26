@@ -5,21 +5,35 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased] - 2026-02-17
+## [0.7.0] - 2026-03-26
 
 ### Added
 
-- Helm chart generation plugin for Kubernetes workloads — batch workers, web services, CronJobs with production extras (helmcraft)
+- Helm chart generation plugin for Kubernetes workloads (helmcraft)
+- Design gates in planner: hard-gate, spec self-review, user approval gate
+- Interface contracts section in design doc template
+- Research orchestrator and parallel dispatcher agents (researcher)
+- Pre-commit autofix tiers in gitmastery committing skill
+- CLAUDE.md update steps in makesmith for agent-first workflow
+- Makefile integration audit category in pysmith
+- WebSearch fallback in unstuck escalating skill
+- Codex-powered code review via MCP (shipit)
 
 ### Changed
 
+- All 57 skill descriptions aligned to "Use when..." format across 13 plugins
+- Plan file paths standardized to directory-based `docs/plans/{SLUG}/` convention
+- Researcher skills converted to skill-wraps-agent pattern
+- Reference files extracted for token efficiency across all plugins
 - Rename gitmastery skills to differ from commands, enabling allowed-tools loading
-- Use --no-verify flag from git-flow-next v1.0.0 (gitmastery)
 - Reorder pre-commit hooks: autofix first to minimize retries
 - Disable Qdrant telemetry reporting in Docker Compose
 
 ### Fixed
 
+- Restored AskUserQuestion to 48 skill allowed-tools dropped during refactors
+- Removed stale subagent_type parameter from shipit reviewing-code
+- Added TaskCreate/TaskUpdate to shipit executing allowed-tools
 - Use correct pre-commit hook id in SKIP env var (gitmastery)
 - Remove outdated postgres bug workarounds (grepai)
 
