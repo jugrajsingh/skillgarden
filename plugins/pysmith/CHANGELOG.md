@@ -2,7 +2,19 @@
 
 All notable changes to the **pysmith** plugin.
 
-## [Unreleased]
+## [0.1.1] - 2026-03-26
+
+### Added
+
+- Makefile integration as 5th audit category in auditing skill
+- YAML discovery with YamlConfigSettingsSource in generating-settings
+- CLAUDE.md commands step in setting-up for agent Makefile usage
+
+### Changed
+
+- Expanded settings template and audit checks references
+
+## [0.1.0] - 2026-02-25
 
 ### Changed
 
