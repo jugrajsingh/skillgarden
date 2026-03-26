@@ -2,7 +2,13 @@
 
 All notable changes to the **dockercraft** plugin.
 
-## [Unreleased]
+## [0.2.1] - 2026-03-26
+
+### Fixed
+
+- Restored AskUserQuestion to skill allowed-tools (auditing, optimizing, setting-up)
+
+## [0.2.0] - 2026-02-25
 
 ### Changed
 
