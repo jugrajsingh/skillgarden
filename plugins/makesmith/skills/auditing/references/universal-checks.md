@@ -38,3 +38,12 @@
 | No shell assignment in recipe | Use `$(shell ...)` in variables, not in recipes |
 | Quiet prefix usage | `@` prefix on echo, not on commands that might fail |
 | Error handling | Use `\|\| true` only on intentional ignore |
+
+## Agent Integration
+
+| Check | Pass Criteria |
+|-------|---------------|
+| CLAUDE.md Commands section | Lists all Makefile targets the agent should use |
+| NEVER instruction | CLAUDE.md contains "NEVER run directly" with list of banned raw commands |
+| Script targets documented | Project-specific script targets listed in CLAUDE.md |
+| Deploy targets documented | If Makefile.deploy exists, deploy commands listed in CLAUDE.md |

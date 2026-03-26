@@ -48,10 +48,16 @@ install-hooks: install-dev  ## Install pre-commit hooks
 # =============================================================================
 # Testing
 # =============================================================================
-.PHONY: test test-cov
+.PHONY: test test-unit test-integration test-cov
 
-test:  ## Run tests
+test:  ## Run all tests
  uv run pytest
+
+test-unit:  ## Run unit tests only
+ uv run pytest tests/unit/
+
+test-integration:  ## Run integration tests only
+ uv run pytest tests/integration/
 
 test-cov:  ## Run tests with coverage
  uv run pytest --cov --cov-report=term-missing
@@ -59,7 +65,7 @@ test-cov:  ## Run tests with coverage
 # =============================================================================
 # Code Quality
 # =============================================================================
-.PHONY: lint lint-fix format type-check quality fix
+.PHONY: lint lint-fix format format-check type-check quality fix
 
 lint:  ## Run linter
  uv run ruff check .
@@ -70,15 +76,43 @@ lint-fix:  ## Run linter with auto-fix
 format:  ## Format code
  uv run ruff format .
 
+format-check:  ## Check formatting without fixing
+ uv run ruff format . --check
+
 type-check:  ## Run type checker
  uv run mypy .
 
-quality:  ## Run all quality checks (format → lint → types)
- uv run ruff format . --check
- uv run ruff check .
- uv run mypy .
+quality: format-check lint type-check  ## Run all quality checks
 
 fix: lint-fix format  ## Auto-fix lint + format
+
+# =============================================================================
+# Pre-commit
+# =============================================================================
+.PHONY: pre-commit pre-commit-all pre-commit-clean pre-commit-update
+
+pre-commit:  ## Run pre-commit on staged files
+ uv run pre-commit run
+
+pre-commit-all:  ## Run pre-commit on all files
+ uv run pre-commit run --all-files
+
+pre-commit-clean:  ## Clean pre-commit cache and reinstall hooks
+ uv run pre-commit clean
+ uv run pre-commit install --install-hooks
+
+pre-commit-update:  ## Update pre-commit hook versions
+ uv run pre-commit autoupdate
+
+# =============================================================================
+# Scripts (project-specific — add targets as scripts are created)
+# =============================================================================
+# Pattern: each script gets a Makefile target so agents and developers
+# run it with the correct arguments and environment variables.
+#
+# Example:
+#   analyze-job:  ## Analyze batch job (JOB_ID=abc123)
+#    uv run python scripts/analyze_job.py $(JOB_ID)
 
 # =============================================================================
 # Utilities

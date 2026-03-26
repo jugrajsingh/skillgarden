@@ -5,9 +5,9 @@ allowed-tools:
   - Read
   - Write
   - Glob
-  - AskUserQuestion
   - Bash(pwd)
   - Bash(basename *)
+  - AskUserQuestion
 ---
 
 # Generate Makefile.local
@@ -22,6 +22,7 @@ Generate Makefile.local with local development targets. This file stores project
 - **PYTHONPATH always exported** - Enables bare imports without build system
 - **uv-native commands** - All commands use `uv run` or `uv sync`
 - **Self-documenting** - `make -f Makefile.local help` shows all targets
+- **Agent-first** - CLAUDE.md updated so agents always use Makefile targets
 
 ## Templates
 
@@ -95,7 +96,41 @@ Extract the makefile content from the markdown code block.
 
 Write to `Makefile.local`.
 
-### 6. Report
+### 6. Update CLAUDE.md Commands Section
+
+After generating Makefile.local, update the project's CLAUDE.md to instruct agents to use Makefile targets. This is critical — without it, agents bypass the Makefile and run raw commands.
+
+**Read the generated Makefile.local** and extract all targets with `## descriptions`.
+
+**Find or create the `## Commands` section in CLAUDE.md.** If CLAUDE.md doesn't exist, create a minimal one. If the Commands section exists, replace it entirely.
+
+**Generate the Commands section:**
+
+````markdown
+## Commands
+
+**CRITICAL: Never run commands directly. Always use Makefile.local.**
+
+```bash
+make -f Makefile.local setup-local    # Full local setup
+make -f Makefile.local install-dev    # Install dependencies
+make -f Makefile.local test           # Run all tests
+make -f Makefile.local test-unit      # Unit tests only
+make -f Makefile.local lint           # Run linter
+make -f Makefile.local type-check     # Type checking
+make -f Makefile.local quality        # All quality checks (lint + format + type-check)
+make -f Makefile.local pre-commit     # Run pre-commit hooks
+make -f Makefile.local clean          # Remove caches
+```
+
+**NEVER run directly:** `pip install`, `uv sync`, `uv run`, `python`, `pytest`, `ruff`, `mypy`
+````
+
+Include all targets from the actual generated Makefile, including any project-specific Script targets. If Makefile.deploy exists, also include its key targets (build-image, push-image, deploy) in a separate block.
+
+**Why this matters:** Agents rely on CLAUDE.md as their primary instruction set. Without explicit Makefile commands, they default to raw `uv run pytest`, `python main.py`, etc., which fails when projects need specific env vars, credential paths, or submodule excludes.
+
+### 7. Report
 
 ```text
 Created Makefile.local:
@@ -105,16 +140,23 @@ Configuration:
   - PYTHONPATH: exported (enables bare imports)
 
 Targets:
-  setup-local   - Full local setup (deps + hooks)
-  install-dev   - Install all dependencies
-  test          - Run tests
-  lint          - Run linter
-  format        - Format code
-  type-check    - Run type checker
-  quality       - Run all quality checks
-  fix           - Auto-fix lint + format
-  clean         - Remove caches
-  reset         - Full reset
+  setup-local     - Full local setup (deps + hooks)
+  install-dev     - Install all dependencies
+  test            - Run all tests
+  test-unit       - Run unit tests only
+  test-integration - Run integration tests
+  lint            - Run linter
+  format          - Format code
+  format-check    - Check formatting
+  type-check      - Run type checker
+  quality         - All quality checks
+  fix             - Auto-fix lint + format
+  pre-commit      - Run pre-commit hooks
+  clean           - Remove caches
+  reset           - Full reset
+
+Updated CLAUDE.md:
+  - Commands section updated with all Makefile targets
 
 Usage:
   make -f Makefile.local setup-local   # First time setup
@@ -128,4 +170,22 @@ Other skills should use Makefile.local commands instead of raw uv commands (`mak
 
 ## Custom Targets
 
-Users can add project-specific targets (run, run-dev, infra-up, infra-down) to the Application or Infrastructure sections following the same `.PHONY` + `## description` pattern.
+Users can add project-specific targets to these sections:
+
+- **Application** — `run`, `run-dev`, `run-{source}` for multi-deployment apps
+- **Infrastructure** — `infra-up`, `infra-down`, `bootstrap` for Docker/DB setup
+- **Scripts** — One target per script, with correct env vars and arguments
+
+All custom targets should follow the `.PHONY` + `## description` pattern for self-documentation and help output.
+
+When adding script targets, the agent MUST also update the CLAUDE.md Commands section to include the new target.
+
+## Scripts Section Convention
+
+The template includes a Scripts section with a comment-only placeholder. When agents create scripts for a project, they should:
+
+1. Add a Makefile target with the correct env vars and arguments
+2. Update CLAUDE.md Commands section to include the new target
+3. Use the `## description` pattern so `make help` shows it
+
+This ensures all scripts are discoverable and runnable with the correct configuration, rather than requiring developers to guess credential paths or argument formats.

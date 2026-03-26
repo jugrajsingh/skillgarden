@@ -5,9 +5,9 @@ allowed-tools:
   - Read
   - Write
   - Glob
-  - AskUserQuestion
   - Bash(pwd)
   - Bash(basename *)
+  - AskUserQuestion
 ---
 
 # Generate Root Makefile

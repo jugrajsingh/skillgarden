@@ -5,10 +5,10 @@ allowed-tools:
   - Read
   - Write
   - Glob
-  - AskUserQuestion
   - Bash(pwd)
   - Bash(basename *)
   - Bash(git describe *)
+  - AskUserQuestion
 ---
 
 # Generate Makefile.deploy
@@ -95,7 +95,34 @@ Customize the template:
 - Insert deployment targets from the loaded reference file (step 5)
 - For one-to-many deployments, use the multi-deployment section from the reference
 
-### 7. Report
+### 7. Update CLAUDE.md Deploy Section
+
+Append deploy commands to the CLAUDE.md Commands section. If the Commands section already exists (from generating-local), add a **Deploy** subsection. If it doesn't exist, create the full section.
+
+````markdown
+**Deploy:**
+
+```bash
+make -f Makefile.deploy build-image           # Build Docker image
+make -f Makefile.deploy push-image            # Push to registry
+make -f Makefile.deploy deploy                # Deploy via Helm
+make -f Makefile.deploy build-push-deploy     # Full CI/CD
+make -f Makefile.deploy status                # Pod status
+make -f Makefile.deploy logs                  # Tail pod logs
+```
+````
+
+For multi-deployment projects, list the per-deployment targets:
+
+````markdown
+```bash
+make -f Makefile.deploy deploy SOURCE=retail  # Deploy retail
+make -f Makefile.deploy deploy-retail         # Alias
+make -f Makefile.deploy deploy-runway         # Deploy runway
+```
+````
+
+### 8. Report
 
 ```text
 Created Makefile.deploy:
