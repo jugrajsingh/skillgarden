@@ -46,7 +46,7 @@ Read any referenced files to understand the current structure.
 Generate a slug from the feature name (lowercase, hyphenated, max 5 words).
 
 ```bash
-mkdir -p docs/plans
+mkdir -p docs/plans/{SLUG}
 ```
 
 Read templates from `${CLAUDE_PLUGIN_ROOT}/templates/`:
@@ -59,9 +59,9 @@ Create 3 files, replacing template placeholders:
 
 | File | Path |
 |------|------|
-| Task Plan | `docs/plans/{SLUG}-task_plan.md` |
-| Findings | `docs/plans/{SLUG}-findings.md` |
-| Progress | `docs/plans/{SLUG}-progress.md` |
+| Task Plan | docs/plans/{SLUG}/task_plan.md |
+| Findings | docs/plans/{SLUG}/findings.md |
+| Progress | docs/plans/{SLUG}/progress.md |
 
 Replace `{TITLE}` with the feature title, `{DATE}` with today's date, `{DESIGN_DOC}` with the source design doc path (or "inline description").
 
@@ -73,15 +73,15 @@ See references/task-format.md for field definitions, example task, and decomposi
 
 ## Step 4: Research Gaps
 
-For each task, verify referenced files exist, imports are available, and APIs have expected signatures. Record patterns found, open questions, and research notes in `docs/plans/{SLUG}-findings.md`. If significant unknowns, ask user: continue (mark as open) or clarify now.
+For each task, verify referenced files exist, imports are available, and APIs have expected signatures. Record patterns found, open questions, and research notes in `docs/plans/{SLUG}/findings.md`. If significant unknowns, ask user: continue (mark as open) or clarify now.
 
 ## Step 5: Order by Dependency and Batch
 
-Sort tasks by dependency order. Group into batches (max 3 tasks per batch, no intra-batch dependencies, batch N+1 depends on batch N). Write to `docs/plans/{SLUG}-task_plan.md`. See references/task-format.md for batching rules and format.
+Sort tasks by dependency order. Group into batches (max 3 tasks per batch, no intra-batch dependencies, batch N+1 depends on batch N). Write to `docs/plans/{SLUG}/task_plan.md`. See references/task-format.md for batching rules and format.
 
 ## Step 6: Initialize Progress Tracking
 
-Write `docs/plans/{SLUG}-progress.md` with all tasks set to pending and batch log entries. See references/task-format.md for progress tracking template.
+Write `docs/plans/{SLUG}/progress.md` with all tasks set to pending and batch log entries. See references/task-format.md for progress tracking template.
 
 ## Step 7: Present Plan Summary
 

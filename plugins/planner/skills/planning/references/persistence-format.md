@@ -106,9 +106,9 @@ Notes: --
 
 All three files share the same slug prefix:
 
-- `{SLUG}-task_plan.md`
-- `{SLUG}-findings.md`
-- `{SLUG}-progress.md`
+- `{SLUG}/task_plan.md`
+- `{SLUG}/findings.md`
+- `{SLUG}/progress.md`
 
 Slug format: lowercase, hyphenated, max 5 words. Derived from feature name.
 

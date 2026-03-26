@@ -1,6 +1,6 @@
 # Design Doc Template
 
-Create `docs/plans/{SLUG}-design.md` with:
+Create `docs/plans/{SLUG}/design.md` with:
 
 ```markdown
 # Design: {TITLE}
@@ -31,6 +31,21 @@ Create `docs/plans/{SLUG}-design.md` with:
 - { decision 1 }: { rationale }
 - { decision 2 }: { rationale }
 
+## Interface Contracts
+
+Define boundaries between components. Each contract specifies inputs, outputs,
+and the agreement between caller and callee.
+
+### { Component A } -> { Component B }
+
+**Method/Endpoint:** { signature or path }
+**Input:** { data schema or parameters }
+**Output:** { return type or response shape }
+**Errors:** { error cases and how they surface }
+**Invariants:** { what must always be true }
+
+{ Repeat for each boundary }
+
 ## Trade-offs Considered
 
 | Option | Pros | Cons | Verdict |
@@ -44,4 +59,7 @@ Create `docs/plans/{SLUG}-design.md` with:
 - { unresolved question 2 }
 ```
 
-Keep design docs under 200 lines.
+Scale section depth to complexity. Simple features may skip Interface Contracts.
+Complex multi-component designs should define every boundary.
+
+No hard line limit — clarity over brevity. But avoid padding.

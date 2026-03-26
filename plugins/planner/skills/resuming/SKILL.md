@@ -18,7 +18,7 @@ Recover session state by reading persistence files and answering the 5-Question 
 If `$ARGUMENTS` is empty, find the most recently modified plan files:
 
 ```bash
-ls -t docs/plans/*-progress.md 2>/dev/null | head -5
+ls -t docs/plans/*/progress.md 2>/dev/null | head -5
 ```
 
 If multiple found, offer selection:
@@ -41,9 +41,9 @@ If none found, report: "No plan files found in docs/plans/. Use /planner:plan to
 Check for all 3 files:
 
 ```bash
-test -f docs/plans/{SLUG}-task_plan.md && echo "task_plan: found" || echo "task_plan: MISSING"
-test -f docs/plans/{SLUG}-findings.md && echo "findings: found" || echo "findings: MISSING"
-test -f docs/plans/{SLUG}-progress.md && echo "progress: found" || echo "progress: MISSING"
+test -f docs/plans/{SLUG}/task_plan.md && echo "task_plan: found" || echo "task_plan: MISSING"
+test -f docs/plans/{SLUG}/findings.md && echo "findings: found" || echo "findings: MISSING"
+test -f docs/plans/{SLUG}/progress.md && echo "progress: found" || echo "progress: MISSING"
 ```
 
 If any file is missing, report which ones and offer:
@@ -65,9 +65,9 @@ If creating from template, read `${CLAUDE_PLUGIN_ROOT}/templates/` and generate 
 
 Read each file that exists:
 
-- `docs/plans/{SLUG}-task_plan.md` — tasks, batches, dependencies
-- `docs/plans/{SLUG}-findings.md` — patterns, open questions, research notes
-- `docs/plans/{SLUG}-progress.md` — task statuses, batch log
+- `docs/plans/{SLUG}/task_plan.md` — tasks, batches, dependencies
+- `docs/plans/{SLUG}/findings.md` — patterns, open questions, research notes
+- `docs/plans/{SLUG}/progress.md` — task statuses, batch log
 
 ## Step 3: Answer the 5-Question Reboot Test
 

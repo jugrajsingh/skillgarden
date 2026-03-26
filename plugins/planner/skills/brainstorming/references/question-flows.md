@@ -87,7 +87,7 @@ AskUserQuestion:
       description: "Switch to a different approach from Step 3"
 ```
 
-## Step 6: Next Steps
+## Step 9: Next Steps
 
 ```yaml
 AskUserQuestion:

@@ -36,7 +36,7 @@
 - Maximum 3 tasks per batch
 - Batch N+1 depends on at least one task in batch N
 
-Write to `docs/plans/{SLUG}-task_plan.md`:
+Write to `docs/plans/{SLUG}/task_plan.md`:
 
 ```markdown
 ## Batches
@@ -55,7 +55,7 @@ Write to `docs/plans/{SLUG}-task_plan.md`:
 
 ## Progress Tracking Template
 
-Write `docs/plans/{SLUG}-progress.md`:
+Write `docs/plans/{SLUG}/progress.md`:
 
 ```markdown
 ## Status
@@ -90,7 +90,7 @@ Files: {X} to create, {Y} to modify
 Open Questions: {Q}
 
 Persistence:
-- Task Plan: docs/plans/{SLUG}-task_plan.md
-- Findings:  docs/plans/{SLUG}-findings.md
-- Progress:  docs/plans/{SLUG}-progress.md
+- Task Plan: docs/plans/{SLUG}/task_plan.md
+- Findings:  docs/plans/{SLUG}/findings.md
+- Progress:  docs/plans/{SLUG}/progress.md
 ```
