@@ -1,9 +1,17 @@
 """Application settings using Pydantic Settings + YAML.
 
 Configuration priority:
-    1. Environment variables (highest) - AWS__AWS_REGION=us-west-2
-    2. YAML configuration file - local.env.yaml
-    3. Default values (lowest) - Field(default="us-east-1")
+    1. Init args (highest) - Settings(yaml_file="production.env.yaml")
+    2. Environment variables - AWS__AWS_REGION=us-west-2
+    3. YAML configuration files - discovered in order, last existing wins
+    4. Default values (lowest) - Field(default="us-east-1")
+
+YAML discovery order (last existing file wins, missing files silently skipped):
+    env.yaml          — base config (deployed via ConfigMap/secret in k8s)
+    local.env.yaml    — local dev overrides (gitignored)
+
+Override at runtime for scripts:
+    Settings(yaml_file="production.env.yaml")
 
 Usage:
     from config.settings import settings
@@ -15,7 +23,16 @@ Usage:
 from functools import lru_cache
 
 from pydantic import BaseModel, Field
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic_settings import (
+    BaseSettings,
+    PydanticBaseSettingsSource,
+    SettingsConfigDict,
+    YamlConfigSettingsSource,
+)
+
+# Discoverable YAML files in priority order (last existing file wins).
+# Missing files are silently skipped by YamlConfigSettingsSource.
+YAML_CONFIG_FILES = ["env.yaml", "local.env.yaml"]
 
 
 # =============================================================================
@@ -109,10 +126,11 @@ class APISettings(BaseModel):
 class Settings(BaseSettings):
     """Application settings.
 
-    Configuration is loaded from:
-        1. Environment variables (use __ for nesting: POSTGRES__HOST)
-        2. YAML file (local.env.yaml)
-        3. Default values defined above
+    Configuration is loaded from (highest to lowest priority):
+        1. Init args — Settings(yaml_file="production.env.yaml")
+        2. Environment variables (use __ for nesting: POSTGRES__HOST)
+        3. YAML files — env.yaml then local.env.yaml (last wins)
+        4. Default values defined above
 
     Example environment variables:
         ENVIRONMENT=production
@@ -135,11 +153,34 @@ class Settings(BaseSettings):
 
     model_config = SettingsConfigDict(
         env_nested_delimiter="__",
-        yaml_file="local.env.yaml",
+        yaml_file=YAML_CONFIG_FILES,
         yaml_file_encoding="utf-8",
         extra="ignore",
         case_sensitive=False,
     )
+
+    @classmethod
+    def settings_customise_sources(
+        cls,
+        settings_cls: type[BaseSettings],
+        init_settings: PydanticBaseSettingsSource,
+        env_settings: PydanticBaseSettingsSource,
+        dotenv_settings: PydanticBaseSettingsSource,  # noqa: ARG003
+        file_secret_settings: PydanticBaseSettingsSource,  # noqa: ARG003
+    ) -> tuple[PydanticBaseSettingsSource, ...]:
+        """Priority: init > env > YAML > defaults.
+
+        Supports ``Settings(yaml_file="production.env.yaml")`` to override
+        the discoverable YAML file list at construction time. Useful for
+        scripts that need to run against non-local environments.
+        """
+        yaml_override = init_settings.init_kwargs.pop("yaml_file", None)
+        yaml_source = (
+            YamlConfigSettingsSource(settings_cls, yaml_file=yaml_override)
+            if yaml_override
+            else YamlConfigSettingsSource(settings_cls)
+        )
+        return (init_settings, env_settings, yaml_source)
 
 
 @lru_cache

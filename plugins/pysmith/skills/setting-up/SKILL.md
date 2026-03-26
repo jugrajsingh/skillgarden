@@ -10,8 +10,8 @@ allowed-tools:
   - Bash(which *)
   - Bash(pwd)
   - Bash(basename *)
-  - AskUserQuestion
   - Skill
+  - AskUserQuestion
 ---
 
 # Python Local Environment Setup (Orchestrator)
@@ -24,7 +24,8 @@ Orchestrates complete Python dev environment setup by invoking specialized gener
 2. **config/settings.py** - Pydantic Settings + example.env.yaml
 3. **.pre-commit-config.yaml** - Security + quality hooks
 4. **Makefile.local** - Dev commands with configured venv location
-5. **Virtual environment** - Created via Makefile.local
+5. **CLAUDE.md Commands section** - Agent instructions for Makefile usage (via makesmith)
+6. **Virtual environment** - Created via Makefile.local
 
 ## Prerequisites
 
@@ -83,11 +84,12 @@ Python Local Environment Ready
 ============================================================================
 
 Files created/updated:
-  ✓ pyproject.toml      - Dependencies + tool configs
-  ✓ config/settings.py  - Pydantic Settings
-  ✓ example.env.yaml    - Configuration template
-  ✓ .pre-commit-config.yaml - Pre-commit hooks
-  ✓ Makefile.local      - Dev commands
+  ✓ pyproject.toml           - Dependencies + tool configs
+  ✓ config/settings.py       - Pydantic Settings
+  ✓ example.env.yaml         - Configuration template
+  ✓ .pre-commit-config.yaml  - Pre-commit hooks
+  ✓ Makefile.local           - Dev commands
+  ✓ CLAUDE.md (Commands)     - Agent instructions updated
 
 Virtual environment:
   Location: {venv_location}
@@ -99,10 +101,15 @@ Next steps:
   3. make -f Makefile.local test
 
 Common commands:
-  make -f Makefile.local help       # Show all targets
-  make -f Makefile.local test       # Run tests
-  make -f Makefile.local lint       # Check code
-  make -f Makefile.local format     # Format code
+  make -f Makefile.local help        # Show all targets
+  make -f Makefile.local test        # Run all tests
+  make -f Makefile.local test-unit   # Unit tests only
+  make -f Makefile.local lint        # Check code
+  make -f Makefile.local format      # Format code
+  make -f Makefile.local quality     # All quality checks
+  make -f Makefile.local pre-commit  # Run pre-commit hooks
+
+IMPORTANT: Always use Makefile targets, never raw uv/python commands.
 ============================================================================
 ```
 

@@ -6,8 +6,8 @@ allowed-tools:
   - Write
   - Glob
   - Grep
-  - AskUserQuestion
   - Bash(uv add *)
+  - AskUserQuestion
 ---
 
 # Generate Pydantic Settings Configuration
@@ -128,6 +128,32 @@ Next steps:
 | `elasticsearch.hosts` | `ELASTICSEARCH__HOSTS='["http://es:9200"]'` |
 | `logging.level` | `LOGGING__LEVEL` |
 
+## YAML Discovery & Runtime Override
+
+The template uses **discoverable YAML files** with `YamlConfigSettingsSource`:
+
+```python
+YAML_CONFIG_FILES = ["env.yaml", "local.env.yaml"]
+```
+
+- Files are checked in order — **last existing file wins**
+- Missing files are **silently skipped** (no errors)
+- `env.yaml` = base config (deployed via ConfigMap/secret in k8s)
+- `local.env.yaml` = local dev overrides (gitignored, highest priority)
+
+**Runtime override** for scripts that need a different environment:
+
+```python
+# In a script (e.g., reset_job.py, reindex_job.py):
+settings = Settings(yaml_file="production.env.yaml")
+```
+
+The `yaml_file` init kwarg replaces the entire discovery list with a single file.
+The underscore prefix avoids collision with the `model_config.yaml_file` key.
+
+This is implemented via `settings_customise_sources()` which pops `yaml_file`
+from `init_kwargs` before Pydantic processes them.
+
 ## Best Practices
 
 1. **Never commit secrets** - Only `example.env.yaml` goes in git
@@ -135,3 +161,5 @@ Next steps:
 3. **Validate early** - Settings load at import time
 4. **Type hints everywhere** - Pydantic validates types
 5. **Document sections** - Help future developers
+6. **YAML discovery order matters** - Last existing file wins (least specific first)
+7. **Use `yaml_file` for scripts** - Don't hardcode production configs

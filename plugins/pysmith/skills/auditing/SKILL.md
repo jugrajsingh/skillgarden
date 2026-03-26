@@ -14,12 +14,13 @@ Analyze a Python project against best practices and generate a structured report
 
 ## Checks
 
-Read `references/audit-checks.md` for the full checklist. Four categories:
+Read `references/audit-checks.md` for the full checklist. Five categories:
 
 1. **Configuration** (pyproject.toml) - ruff, pytest, mypy, coverage, dev deps, docstyle
 2. **Settings Management** - no os.getenv(), no hardcoded secrets, Pydantic Settings, YAML
 3. **Pre-commit Hooks** - gitleaks, pip-audit, ruff, no redundant tools, ordering, branch protection
 4. **Project Structure** - tests/, conftest.py, **init**.py, consistent layout
+5. **Makefile Integration** - Makefile.local exists, CLAUDE.md Commands section, tool alignment
 
 ## Workflow
 

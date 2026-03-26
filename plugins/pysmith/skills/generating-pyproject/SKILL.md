@@ -6,8 +6,8 @@ allowed-tools:
   - Write
   - Glob
   - Grep
-  - AskUserQuestion
   - Bash(uv *)
+  - AskUserQuestion
 ---
 
 # Generate pyproject.toml (uv-native)
@@ -112,13 +112,11 @@ Created pyproject.toml (uv-native) with:
   - mypy: type checking
   - coverage: source tracking
 
-Commands:
-  uv add <package>        # Add production dependency
-  uv add --dev <package>  # Add dev dependency
-  uv sync                 # Install all dependencies
-  uv run pytest           # Run tests
-  uv run ruff check .     # Lint code
-  uv run ruff format .    # Format code
+Note: All tool commands should be run via Makefile.local targets:
+  make -f Makefile.local test       # NOT uv run pytest
+  make -f Makefile.local lint       # NOT uv run ruff check .
+  make -f Makefile.local format     # NOT uv run ruff format .
+  make -f Makefile.local type-check # NOT uv run mypy .
 ```
 
 ## Dependency Management with uv
@@ -128,9 +126,13 @@ Commands:
 | Add production dep | `uv add package` |
 | Add dev dep | `uv add --dev package` |
 | Remove dep | `uv remove package` |
-| Sync deps | `uv sync` |
-| Run tool | `uv run tool` |
+| Sync deps | `make -f Makefile.local install-dev` (preferred) or `uv sync` |
+| Run tests | `make -f Makefile.local test` |
+| Lint code | `make -f Makefile.local lint` |
+| Format code | `make -f Makefile.local format` |
 | Update lockfile | `uv lock --upgrade` |
+
+**Important:** Always prefer Makefile targets over raw `uv run` commands. Makefile targets ensure correct PYTHONPATH, environment variables, and project-specific configuration. Only use `uv add`/`uv remove`/`uv lock` directly since these modify pyproject.toml and have no Makefile equivalent.
 
 ## Ruff Rule Categories
 

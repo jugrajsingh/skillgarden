@@ -44,3 +44,13 @@
 | conftest.py exists | Shared fixtures file in tests/ |
 | __init__.py files present | Package directories have __init__.py |
 | src/ or flat layout consistent | Not mixing both patterns |
+
+## Makefile Integration
+
+| Check | Pass Criteria |
+|-------|---------------|
+| Makefile.local exists | Local dev commands via Makefile |
+| Tool commands use Makefile | No raw `uv run pytest`, `uv run ruff` in CLAUDE.md or agent instructions |
+| CLAUDE.md Commands section | Lists all Makefile targets with "NEVER run directly" instruction |
+| pyproject.toml tool alignment | Makefile lint/test/format targets match pyproject.toml tool configs |
+| Script targets present | Project scripts have Makefile targets (not raw `uv run python scripts/...`) |
