@@ -2,6 +2,13 @@
 
 All notable changes to the **shipit** plugin.
 
+## [0.2.1] - 2026-03-26
+
+### Fixed
+
+- Removed stale `subagent_type: general-purpose` parameter from reviewing-code Task dispatch
+- Added TaskCreate and TaskUpdate to executing skill allowed-tools to match actual usage
+
 ## [0.2.0] - 2026-02-25
 
 ### Added
@@ -11,8 +18,6 @@ All notable changes to the **shipit** plugin.
 - Support for full codebase, diff-based, and file-specific review scopes
 - Optional model and reasoning effort overrides
 - Follow-up conversation via codex-reply thread continuity
-
-## [Unreleased]
 
 ### Changed
 
