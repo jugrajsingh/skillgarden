@@ -2,7 +2,19 @@
 
 All notable changes to the **makesmith** plugin.
 
-## [Unreleased]
+## [0.2.1] - 2026-03-26
+
+### Added
+
+- CLAUDE.md Commands section update step in generating-local and generating-deploy
+- Expanded Python audit checks with Makefile integration category
+
+### Changed
+
+- Updated Makefile templates with improved target structure
+- Agent-first workflow: CLAUDE.md always updated so agents use Makefile targets
+
+## [0.2.0] - 2026-02-25
 
 ### Changed
 
