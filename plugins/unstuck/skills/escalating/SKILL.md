@@ -1,6 +1,6 @@
 ---
 name: escalating
-description: Strike 3 — broader rethink, external search, and structured user escalation
+description: Use when entering Strike 3 of the unstuck protocol — two targeted attempts have failed and the issue needs broader rethink or user escalation
 allowed-tools:
   - Read
   - Glob
@@ -26,13 +26,26 @@ Two strikes failed. Something foundational may be wrong:
 
 ## Step 2: Search for External Solutions
 
-Search for the exact error message and relevant context:
+Try WebSearch for the exact error message and relevant context:
 
 ```text
 WebSearch: "{EXACT_ERROR_MESSAGE} {FRAMEWORK} {LANGUAGE}"
 ```
 
-Check:
+**If WebSearch is unavailable** (deferred tool not loaded), ask the user to search manually:
+
+```yaml
+AskUserQuestion:
+  question: "I can't search the web directly. Could you search for this and paste relevant results?"
+  header: "Web Search"
+  options:
+    - label: "I'll search now"
+      description: "Search: {EXACT_ERROR_MESSAGE} {FRAMEWORK}"
+    - label: "Skip external search"
+      description: "Continue with what we have"
+```
+
+Check (from results or user-provided context):
 
 - GitHub Issues on the relevant library — is this a known bug?
 - Stack Overflow — has someone solved this exact problem?

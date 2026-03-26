@@ -198,6 +198,30 @@ When command says "Invoke the `plugin:deploy` skill", Claude's Skill tool finds 
 - Command and skill have **different** names
 - Or skill is self-contained (no delegation)
 
+### allowed-tools Require Different Names
+
+`allowed-tools` in SKILL.md only load when the **skill name differs from the command name**.
+
+**How it works:**
+
+When a command says "Invoke the `plugin:skill-name` skill", Claude may re-invoke via the Skill tool. The Skill tool resolves commands before skills — so if command and skill share the same namespaced name, it finds the command (no tools), not the skill.
+
+| Command Name | Skill Name | Namespaced Same? | Tools Load? |
+|-------------|------------|-------------------|-------------|
+| `pysmith:pyproject` | `generating-pyproject` | NO | YES |
+| `pysmith:setup` | `setting-up` | NO | YES |
+| `gitmastery:commit` | `commit` | YES (`gitmastery:commit`) | NO |
+
+**Rule:** Always use different names for commands and skills.
+
+| Pattern | Example |
+|---------|---------|
+| Command filename | `commands/commit.md` (name: `plugin:commit`) |
+| Skill directory | `skills/committing/SKILL.md` (name: `committing`) |
+| Command invokes | "Invoke the `plugin:committing` skill" |
+
+**Why it works:** The Skill tool resolves `plugin:committing` → finds no command with that name → loads the skill → tools enforced.
+
 ## Editing Rules
 
 - Keep prompts concise and direct

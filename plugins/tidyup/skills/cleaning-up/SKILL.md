@@ -1,6 +1,6 @@
 ---
 name: cleaning-up
-description: Execute codebase cleanup with safety gates — assess, confirm, remove, consolidate, archive, verify
+description: Use when you have identified cleanup candidates and are ready to safely remove dead code, consolidate duplicates, and archive stale files
 allowed-tools:
   - Read
   - Write
@@ -64,183 +64,23 @@ CRITICAL: Never auto-execute cleanup. Always get explicit user approval for ever
 
 ## Phase 3: Remove Dead Code
 
-For each approved removal, execute in order:
-
-### Unused Imports
-
-1. Read the file
-2. Remove the import line(s)
-3. If import was part of a grouped import (e.g., `from x import a, b, c`), remove only the unused name
-4. Verify: grep the file for the removed name to confirm it's truly unused
-
-### Unreferenced Functions/Classes
-
-1. Read the file
-2. Identify the full extent of the function/class (definition through last line)
-3. Remove the entire definition including decorators and docstring
-4. Verify: grep the codebase for the function/class name
-5. If any reference found outside the original location, STOP and report to user
-
-### Commented-Out Code
-
-1. Read the file
-2. Remove the consecutive comment block identified in assessment
-3. Preserve any non-code comments (explanatory text) adjacent to the block
-
-After each removal:
-
-```bash
-# Sanity check — search for broken references
-grep -r "removed_name" --include="*.py" --include="*.ts" --include="*.js" .
-```
-
-If references found, revert the change and report to user.
+Remove unused imports, unreferenced functions/classes, and commented-out code. Verify with grep after each removal — revert if references found.
 
 ## Phase 4: Consolidate Duplicates
 
-For each approved consolidation:
-
-### Identify Canonical Location
-
-Decision criteria:
-
-- Prefer the more complete implementation
-- Prefer the file closer to shared/utils in the directory tree
-- If equal, prefer the older version (first committed)
-
-### Extract and Deduplicate
-
-1. Read both files containing duplicate code
-2. Choose canonical location
-3. If both files import from the same parent module:
-   - Extract to a shared utility in the common parent
-   - Update both files to import from the shared location
-4. If files are in different modules:
-   - Keep the version in the more appropriate location
-   - Replace the other with an import/reference to the canonical version
-5. Update all call sites across the codebase
-
-After each consolidation:
-
-```bash
-# Verify all references resolve
-grep -rn "function_name" --include="*.py" --include="*.ts" --include="*.js" .
-```
+Identify canonical location (prefer more complete, closer to shared/utils, or older). Extract to shared utility, update all call sites.
 
 ## Phase 5: Archive Stale Content
 
-CRITICAL: Never delete files. Always archive.
+CRITICAL: Never delete files. Always archive to `.archive/` with mirrored directory structure. Update `.archive/MANIFEST.md`.
 
-### Setup Archive Directory
-
-```bash
-mkdir -p .archive
-```
-
-If .archive is not in .gitignore, warn the user and suggest adding it.
-
-### Archive Process
-
-For each approved archive:
-
-1. Create the mirrored directory structure:
-
-   ```bash
-   mkdir -p .archive/{original-directory-path}
-   ```
-
-2. Move the file:
-
-   ```bash
-   git mv {original-path} .archive/{original-path}
-   ```
-
-   If not git-tracked, use regular mv.
-
-3. Update references:
-   - Search for any imports, links, or references to the archived file
-   - Update or annotate them with the new archive location
-   - If a reference is in active code (not docs), warn user instead of auto-updating
-
-### Archive Manifest
-
-After all archives, create or update `.archive/MANIFEST.md`:
-
-```text
-# Archive Manifest
-
-| Original Path | Archived Date | Reason |
-|---------------|---------------|--------|
-| docs/old-api.md | {DATE} | Stale — not modified in 80 commits |
-```
+Full step-by-step procedures for phases 3-5: `references/cleanup-phases.md`
 
 ## Phase 6: Verify
 
-### Run Test Suite
+Run detected test suite, revert any change that causes failures, and generate cleanup report.
 
-Detect the test runner from project configuration:
-
-| File | Runner | Command |
-|------|--------|---------|
-| pytest.ini / pyproject.toml (pytest) | pytest | `pytest` |
-| package.json | npm/yarn | `npm test` |
-| Cargo.toml | cargo | `cargo test` |
-| go.mod | go | `go test ./...` |
-| Makefile (test target) | make | `make test` |
-
-Run the detected test suite:
-
-```bash
-{TEST_COMMAND}
-```
-
-### Handle Test Failures
-
-If tests fail after a change:
-
-1. Identify which cleanup action caused the failure
-2. Revert that specific change (re-read file from git):
-
-   ```bash
-   git checkout -- {FILE}
-   ```
-
-3. Report the failure to user with details
-4. Continue with remaining cleanup items
-
-### Generate Cleanup Report
-
-Use the template from `templates/cleanup-report.md` as the structure.
-
-Fill in all sections:
-
-```text
-## Cleanup Report: {SCOPE}
-
-### Actions Taken
-| Action | File | Type | Details |
-|--------|------|------|---------|
-| Removed | path:line | dead code | {description} |
-| Consolidated | pathA + pathB | duplication | {description} |
-| Archived | path -> .archive/path | stale | {description} |
-
-### Metrics
-- Lines removed: {N}
-- Files archived: {N}
-- Duplicates consolidated: {N}
-
-### Test Results
-- Suite: {runner}
-- Status: {pass/fail}
-- Tests: {passed}/{total}
-
-### Verification
-- All references intact
-- Tests passing
-- No information lost (archived, not deleted)
-```
-
-If any verification item fails, mark it and explain.
+Full verification procedure, test runner detection, and report template: `references/verification.md`
 
 ## Rules
 

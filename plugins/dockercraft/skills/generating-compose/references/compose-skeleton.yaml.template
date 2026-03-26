@@ -1,0 +1,29 @@
+# =============================================================================
+# docker-compose.yml - Local Development
+# =============================================================================
+# Usage:
+#   docker compose up -d        # Start all services
+#   docker compose logs -f app  # Follow app logs
+#   docker compose down         # Stop all services
+# =============================================================================
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - ENVIRONMENT=local
+      - DEBUG=true
+      {service_env_vars}
+    volumes:
+      - .:/app:ro
+    ports:
+      - "{app_port}:{app_port}"
+    depends_on:
+      {service_dependencies}
+
+{service_definitions}
+
+volumes:
+  {volume_definitions}

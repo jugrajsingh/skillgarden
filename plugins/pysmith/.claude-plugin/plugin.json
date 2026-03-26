@@ -1,6 +1,6 @@
 {
   "name": "pysmith",
-  "version": "0.1.0",
+  "version": "0.1.1+g5a24d3c",
   "description": "Python project scaffolding, configuration management, and best practices auditing with uv-native tooling",
   "author": {
     "name": "Jugraj Singh",

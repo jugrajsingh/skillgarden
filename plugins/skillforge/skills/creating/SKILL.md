@@ -1,13 +1,13 @@
 ---
 name: creating
-description: Create a new skill with proper structure, reference files, and best practices. Scaffolds SKILL.md, command wrapper, and reference directory.
+description: Use when you need to create a new skill with proper structure, reference files, and best practices
 allowed-tools:
   - Read
   - Write
   - Glob
-  - AskUserQuestion
   - Bash(ls *)
   - Bash(mkdir *)
+  - AskUserQuestion
 ---
 
 # Create a New Skill

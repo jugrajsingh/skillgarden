@@ -1,6 +1,6 @@
 ---
 name: describing-pr
-description: Generate PR description from changes and plan context — summary, changes, test plan, breaking changes
+description: Use when a branch is ready for PR creation and needs a structured description from diff and plan context
 allowed-tools:
   - Bash(git *)
   - Bash(gh *)

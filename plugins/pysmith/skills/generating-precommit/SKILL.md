@@ -1,6 +1,6 @@
 ---
 name: generating-precommit
-description: Generate .pre-commit-config.yaml with security scanning, linting, and formatting hooks
+description: Use when a Python project needs pre-commit hooks for security scanning, linting, and formatting, or when migrating from black/isort/flake8 to ruff
 allowed-tools:
   - Read
   - Write
@@ -57,15 +57,6 @@ options:
     description: "Keep current setup unchanged"
 ```
 
-Tools ruff replaces:
-
-- black → ruff format
-- isort → ruff I rules
-- flake8 → ruff check
-- bandit → ruff S rules
-- autopep8 → ruff format
-- autoflake → ruff check
-
 ### 2. Generate .pre-commit-config.yaml
 
 Read the base config from `references/pre-commit-base.yaml` and use it as the starting template.
@@ -85,11 +76,13 @@ Copy the base config to `.pre-commit-config.yaml` with applicable sections uncom
 ```text
 Created .pre-commit-config.yaml
 
-Hooks installed:
-  Security:     gitleaks, pip-audit, detect-private-key
-  Validation:   check-ast, check-yaml/json/toml, debug-statements
-  Git hygiene:  no-commit-to-branch, check-merge-conflict
-  Formatting:   ruff (lint+fix), ruff-format, whitespace fixes
+Hook ordering (autofix first to minimize retries):
+  1. Security:    gitleaks, pip-audit, detect-private-key
+  2. Autofix:     whitespace fixers (end-of-file, trailing, line-ending)
+  3. Ruff:        ruff-format THEN ruff --fix (format before lint)
+  4. Validation:  check-ast, check-yaml/json/toml, debug-statements
+  5. Git quality: no-commit-to-branch, check-merge-conflict
+  6. Commits:     conventional-pre-commit (commit-msg stage)
 
 Ruff replaces: black, isort, flake8, bandit, autopep8
 
@@ -98,32 +91,6 @@ Run all: pre-commit run --all-files
 Update:  pre-commit autoupdate
 ```
 
-## Why No Bandit?
-
-Ruff's `S` rules (flake8-bandit) cover the same security checks:
-
-- S101: assert_used
-- S102: exec_used
-- S103: bad_file_permissions
-- S104: hardcoded_bind_all_interfaces
-- S105-S108: hardcoded passwords/secrets
-- S301-S303: pickle, marshal, insecure hash
-- S311: pseudo-random generators
-- S501-S509: SSL/TLS issues
-- S601-S612: shell injection, SQL injection
-
-Enable in pyproject.toml:
-
-```toml
-[tool.ruff.lint]
-select = ["S"]  # Security rules
-```
-
 ## Version Updates
 
-Check latest versions:
-
-- <https://github.com/gitleaks/gitleaks/releases>
-- <https://github.com/astral-sh/ruff-pre-commit/releases>
-- <https://github.com/pre-commit/pre-commit-hooks/releases>
-- <https://github.com/pypa/pip-audit/releases>
+Check latest versions before generating: gitleaks, ruff-pre-commit, pre-commit-hooks, pip-audit (all on GitHub releases).

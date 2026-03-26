@@ -1,6 +1,6 @@
 ---
 name: handing-off
-description: Generate session transfer document — decisions, open questions, blockers, next steps for the next session
+description: Use when ending a session and need to document decisions, open questions, and blockers so the next session can resume with full context
 allowed-tools:
   - Read
   - Write
@@ -28,9 +28,9 @@ If multiple found, offer selection. If none found, report: "No plan files found.
 
 Read the persistence files for the slug:
 
-- `docs/plans/{SLUG}-task_plan.md`
-- `docs/plans/{SLUG}-findings.md`
-- `docs/plans/{SLUG}-progress.md`
+- `docs/plans/{SLUG}/task_plan.md`
+- `docs/plans/{SLUG}/findings.md`
+- `docs/plans/{SLUG}/progress.md`
 
 Also check for related research:
 
@@ -80,13 +80,13 @@ cat ${CLAUDE_PLUGIN_ROOT}/templates/handoff.md
 
 ## Step 4: Generate Handoff Document
 
-Create `docs/plans/{SLUG}-handoff.md`:
+Create `docs/plans/{SLUG}/handoff.md`:
 
 ```markdown
 # Handoff: {TITLE}
 
 **Date:** {TODAY}
-**Plan:** docs/plans/{SLUG}-task_plan.md
+**Plan:** docs/plans/{SLUG}/task_plan.md
 
 ## Context
 
@@ -126,7 +126,7 @@ Report:
 ```text
 ## Handoff Complete
 
-File: docs/plans/{SLUG}-handoff.md
+File: docs/plans/{SLUG}/handoff.md
 
 Summary:
 - Decisions: {N} documented

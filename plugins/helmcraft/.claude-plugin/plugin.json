@@ -1,0 +1,12 @@
+{
+  "name": "helmcraft",
+  "version": "0.1.1+g7dd0171",
+  "description": "Helm chart generation for Kubernetes workloads - batch workers, web services, and CronJobs with production extras",
+  "author": {
+    "name": "Jugraj Singh",
+    "email": "jugrajskhalsa@gmail.com"
+  },
+  "repository": "https://github.com/jugrajsingh/skillgarden",
+  "license": "MIT",
+  "keywords": ["helm", "kubernetes", "chart", "batch-worker", "sqs", "deployment", "keda", "security"]
+}

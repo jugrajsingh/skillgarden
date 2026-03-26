@@ -1,6 +1,6 @@
 {
   "name": "skillforge",
-  "version": "0.1.0",
+  "version": "0.1.1+g4bc0933",
   "description": "Skill design best practices - audit existing skills and create new ones with reference file patterns, modularization, and token-aware architecture",
   "author": {
     "name": "Jugraj Singh",

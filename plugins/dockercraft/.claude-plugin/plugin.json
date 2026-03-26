@@ -1,6 +1,6 @@
 {
   "name": "dockercraft",
-  "version": "0.2.0",
+  "version": "0.2.1+gce74c70",
   "description": "Docker best practices: language-aware Dockerfile generation, compose orchestration, security auditing, and image optimization",
   "author": {
     "name": "Jugraj Singh",

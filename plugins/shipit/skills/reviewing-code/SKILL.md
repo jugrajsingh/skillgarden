@@ -1,6 +1,6 @@
 ---
 name: reviewing-code
-description: Code review dispatch — gather diff, dispatch code-reviewer agent, present findings
+description: Use when code changes need review — gathers diff, dispatches code-reviewer agent, and presents structured findings
 allowed-tools:
   - Bash(git *)
   - Read
@@ -83,7 +83,7 @@ Derive a slug for the review report file name:
 
 ## Step 4: Dispatch Code-Reviewer Agent
 
-Create a Task agent (subagent_type: general-purpose) with code-reviewer instructions.
+Dispatch a Task agent with the code-reviewer prompt from this plugin's agents/code-reviewer.md.
 
 Provide the agent with:
 

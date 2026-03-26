@@ -1,6 +1,6 @@
 ---
 name: generating-precommit
-description: Generate pre-commit hooks for Makefile linting with mbake
+description: Use when adding Makefile linting to pre-commit configuration, or when Makefiles have inconsistent formatting
 allowed-tools:
   - Read
   - Write

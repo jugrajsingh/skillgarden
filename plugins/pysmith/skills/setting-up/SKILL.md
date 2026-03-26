@@ -1,6 +1,6 @@
 ---
 name: setting-up
-description: Orchestrate complete Python dev environment setup by invoking specialized generator skills. Creates pyproject.toml, config/settings.py, .pre-commit-config.yaml, and Makefile.local.
+description: Use when bootstrapping a new Python project from scratch or when a project needs pyproject.toml, settings, pre-commit, and Makefile in one pass
 allowed-tools:
   - Read
   - Glob
@@ -10,8 +10,8 @@ allowed-tools:
   - Bash(which *)
   - Bash(pwd)
   - Bash(basename *)
-  - AskUserQuestion
   - Skill
+  - AskUserQuestion
 ---
 
 # Python Local Environment Setup (Orchestrator)
@@ -24,7 +24,8 @@ Orchestrates complete Python dev environment setup by invoking specialized gener
 2. **config/settings.py** - Pydantic Settings + example.env.yaml
 3. **.pre-commit-config.yaml** - Security + quality hooks
 4. **Makefile.local** - Dev commands with configured venv location
-5. **Virtual environment** - Created via Makefile.local
+5. **CLAUDE.md Commands section** - Agent instructions for Makefile usage (via makesmith)
+6. **Virtual environment** - Created via Makefile.local
 
 ## Prerequisites
 
@@ -48,53 +49,20 @@ Glob: pyproject.toml, config/settings.py, .pre-commit-config.yaml, Makefile.loca
 
 Report what exists vs what will be created.
 
-### 3. Generate pyproject.toml
+### 3. Generate Files (invoke skills in order)
 
-**If no pyproject.toml:**
+For each missing file, invoke the corresponding skill:
 
-Invoke the `pysmith:generating-pyproject` skill and follow it exactly.
+| File | Condition | Skill to Invoke |
+|------|-----------|-----------------|
+| pyproject.toml | Missing | `pysmith:generating-pyproject` |
+| config/settings.py | Missing | `pysmith:generating-settings` |
+| .pre-commit-config.yaml | Missing | `pysmith:generating-precommit` |
+| Makefile.local | Missing | `makesmith:generating-local` |
 
-This generates:
+Each skill handles its own user interactions (merge vs overwrite, section selection, etc.).
 
-- `[project]` with dependencies
-- `[dependency-groups]` with dev deps
-- `[tool.*]` configurations for ruff, pytest, mypy, coverage
-
-### 4. Generate Pydantic Settings
-
-**If no config/settings.py:**
-
-Invoke the `pysmith:generating-settings` skill and follow it exactly.
-
-This generates:
-
-- `config/settings.py` - Settings class with selected sections
-- `example.env.yaml` - Configuration template
-- Updates `.gitignore` for *.env.yaml
-
-### 5. Generate Pre-commit Config
-
-**If no .pre-commit-config.yaml:**
-
-Invoke the `pysmith:generating-precommit` skill and follow it exactly.
-
-This generates:
-
-- `.pre-commit-config.yaml` with gitleaks, pip-audit, ruff hooks
-
-### 6. Generate Makefile.local
-
-**If no Makefile.local:**
-
-Invoke the `makesmith:generating-local` skill and follow it exactly.
-
-This:
-
-- Asks user for venv location preference
-- Generates `Makefile.local` with all dev commands
-- Configures `UV_PROJECT_ENVIRONMENT` for chosen venv location
-
-### 7. Execute Setup
+### 4. Execute Setup
 
 After all configs are generated, run the setup via Makefile.local:
 
@@ -108,7 +76,7 @@ This executes:
 2. `install-dev` - Runs `uv sync` to install all dependencies
 3. `install-hooks` - Runs `pre-commit install`
 
-### 8. Report Success
+### 5. Report Success
 
 ```text
 ============================================================================
@@ -116,11 +84,12 @@ Python Local Environment Ready
 ============================================================================
 
 Files created/updated:
-  ✓ pyproject.toml      - Dependencies + tool configs
-  ✓ config/settings.py  - Pydantic Settings
-  ✓ example.env.yaml    - Configuration template
-  ✓ .pre-commit-config.yaml - Pre-commit hooks
-  ✓ Makefile.local      - Dev commands
+  ✓ pyproject.toml           - Dependencies + tool configs
+  ✓ config/settings.py       - Pydantic Settings
+  ✓ example.env.yaml         - Configuration template
+  ✓ .pre-commit-config.yaml  - Pre-commit hooks
+  ✓ Makefile.local           - Dev commands
+  ✓ CLAUDE.md (Commands)     - Agent instructions updated
 
 Virtual environment:
   Location: {venv_location}
@@ -132,10 +101,15 @@ Next steps:
   3. make -f Makefile.local test
 
 Common commands:
-  make -f Makefile.local help       # Show all targets
-  make -f Makefile.local test       # Run tests
-  make -f Makefile.local lint       # Check code
-  make -f Makefile.local format     # Format code
+  make -f Makefile.local help        # Show all targets
+  make -f Makefile.local test        # Run all tests
+  make -f Makefile.local test-unit   # Unit tests only
+  make -f Makefile.local lint        # Check code
+  make -f Makefile.local format      # Format code
+  make -f Makefile.local quality     # All quality checks
+  make -f Makefile.local pre-commit  # Run pre-commit hooks
+
+IMPORTANT: Always use Makefile targets, never raw uv/python commands.
 ============================================================================
 ```
 
@@ -164,14 +138,3 @@ Or see: https://docs.astral.sh/uv/getting-started/installation/
 - Report which skill failed
 - Suggest running it directly for more details
 - Continue with remaining skills if possible
-
-## Integration Notes
-
-This orchestrator invokes these skills in order:
-
-1. `pysmith:generating-pyproject`
-2. `pysmith:generating-settings`
-3. `pysmith:generating-precommit`
-4. `makesmith:generating-local`
-
-Each skill handles its own user interactions (merge vs overwrite, section selection, etc.).

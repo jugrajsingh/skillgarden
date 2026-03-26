@@ -1,6 +1,6 @@
 ---
 name: generating-compose
-description: Generate docker-compose.yml for local development. Detects services from project dependencies and configures health checks. Use for setting up Docker-based local development with databases, caches, and other services.
+description: Use when setting up Docker-based local development with databases, caches, message queues, or other infrastructure services
 allowed-tools:
   - Read
   - Write
@@ -92,51 +92,13 @@ Mount source code? [Yes/No]
 
 ### 7. Generate docker-compose.yml
 
-Compose the file using the app skeleton below plus service definitions from loaded references:
+Read `references/compose-skeleton.yaml.template` for the app skeleton. Customize:
 
-```yaml
-# =============================================================================
-# docker-compose.yml - Local Development
-# =============================================================================
-# Usage:
-#   docker compose up -d        # Start all services
-#   docker compose logs -f app  # Follow app logs
-#   docker compose down         # Stop all services
-# =============================================================================
-
-services:
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    environment:
-      - ENVIRONMENT=local
-      - DEBUG=true
-      {service_env_vars}
-    volumes:
-      - .:/app:ro
-    ports:
-      - "{app_port}:{app_port}"
-    depends_on:
-      {service_dependencies}
-
-{service_definitions}
-
-volumes:
-  {volume_definitions}
-```
-
-### 8. depends_on with Conditions
-
-For proper startup ordering, use health-check-based conditions:
-
-```yaml
-depends_on:
-  postgres:
-    condition: service_healthy
-  redis:
-    condition: service_healthy
-```
+- Set `{app_port}` from user's answer in step 6
+- Insert service env vars from loaded reference files
+- Insert service definitions from loaded reference files
+- Insert volume definitions for each service
+- Use `condition: service_healthy` in all depends_on entries for proper startup ordering
 
 ### 9. Report
 
@@ -161,16 +123,6 @@ Commands:
   docker compose down -v        # Stop and remove volumes
 ```
 
-## Service Reference Files
+## Service References
 
-Each service is defined in its own reference file under `references/`:
-
-- `references/postgres.md` - PostgreSQL 16 with health check
-- `references/redis.md` - Redis 7 with persistence
-- `references/elasticsearch.md` - Elasticsearch 8 single-node
-- `references/mongodb.md` - MongoDB 7
-- `references/rabbitmq.md` - RabbitMQ 3 with management UI
-- `references/kafka.md` - Confluent Kafka + Zookeeper
-- `references/localstack.md` - LocalStack for AWS services
-- `references/minio.md` - MinIO S3-compatible storage
-- `references/mysql.md` - MySQL 8
+Each service definition is in `references/{service}.md` (see detection table in step 3 for mapping).

@@ -1,17 +1,21 @@
 ---
 name: brainstorming
-description: Design exploration through guided dialogue — iterative questioning, trade-off analysis, design doc output
+description: Use when designing new features, architecture decisions, refactor strategies, or decomposing complex problems through iterative questioning
 allowed-tools:
   - Read
   - Write
   - Glob
   - Grep
+  - Bash(git *)
+  - Bash(mkdir *)
   - AskUserQuestion
 ---
 
 # Design Brainstorming
 
 Explore design ideas through iterative questioning, trade-off analysis, and structured design doc output.
+
+HARD-GATE: Do NOT invoke any implementation skill, write code, or scaffold files until the design doc is approved by the user. Even for trivially simple projects — design first, always.
 
 ## Input
 
@@ -22,7 +26,7 @@ If `$ARGUMENTS` is empty, ask:
 ```yaml
 AskUserQuestion:
   question: "What would you like to brainstorm?"
-  header: "Brainstorm Topic"
+  header: "Topic"
   options:
     - label: "New feature"
       description: "Design a new capability from scratch"
@@ -50,187 +54,108 @@ Read README.md (or README) if it exists for project context.
 
 Scan docs/plans/ for any existing design docs related to the topic. If a relevant design already exists, mention it and ask whether to extend or start fresh.
 
-## Step 2: Ask Clarifying Questions
+### Scope Decomposition Check
 
-Ask up to 3 clarifying questions, **one at a time**, using AskUserQuestion with multiple-choice options where possible.
-
-**Question 1 — Who benefits:**
+If the request spans multiple independent subsystems, flag it immediately:
 
 ```yaml
 AskUserQuestion:
-  question: "Who is the primary user or beneficiary of this?"
-  header: "Target User"
-  options:
-    - label: "End users"
-      description: "People using the product directly"
-    - label: "Developers"
-      description: "Engineers working on the codebase"
-    - label: "Operations"
-      description: "Team managing deployment and infrastructure"
-    - label: "Other"
-      description: "Describe in your response"
-```
-
-**Question 2 — Constraints:**
-
-```yaml
-AskUserQuestion:
-  question: "What constraints should we consider?"
-  header: "Constraints"
-  options:
-    - label: "Must integrate with existing system"
-      description: "Cannot rewrite or replace current components"
-    - label: "Performance-critical"
-      description: "Latency, throughput, or resource limits matter"
-    - label: "Time-boxed"
-      description: "Must ship within a fixed timeframe"
-    - label: "No major constraints"
-      description: "Greenfield or flexible scope"
-```
-
-**Question 3 — Scope:**
-
-```yaml
-AskUserQuestion:
-  question: "What scope feels right for a first iteration?"
+  question: "This spans multiple independent subsystems. Design each separately?"
   header: "Scope"
   options:
-    - label: "Minimal — proof of concept"
-      description: "Smallest version that validates the idea"
-    - label: "Focused — single use case"
-      description: "One complete workflow end-to-end"
-    - label: "Broad — multiple use cases"
-      description: "Cover the main scenarios from the start"
+    - label: "Yes, decompose"
+      description: "Create separate design docs per subsystem"
+    - label: "No, single design"
+      description: "Treat as one unified design"
 ```
 
-Skip questions whose answers are already clear from `$ARGUMENTS` or project context.
+If decomposed: run brainstorming once per subsystem, each with its own design doc.
+
+### Existing Codebase Awareness
+
+When working in an existing codebase: explore first, follow existing patterns, include targeted improvements for code you touch, never propose unrelated refactoring.
+
+## Step 2: Ask Clarifying Questions
+
+Ask up to 3 questions **one at a time** via AskUserQuestion: who benefits (users/developers/ops), constraints (integration/performance/time), scope (minimal/focused/broad). Skip questions already answered by context.
+
+See references/question-flows.md for the AskUserQuestion YAML blocks.
 
 ## Step 3: Propose Approaches
 
-Based on answers, propose 2-3 approaches with trade-offs.
-
-Present via AskUserQuestion:
-
-```yaml
-AskUserQuestion:
-  question: "Which approach resonates most? We can refine from there."
-  header: "Proposed Approaches"
-  options:
-    - label: "{APPROACH_1_NAME}"
-      description: "{1-sentence summary}. Pro: {benefit}. Con: {drawback}"
-    - label: "{APPROACH_2_NAME}"
-      description: "{1-sentence summary}. Pro: {benefit}. Con: {drawback}"
-    - label: "{APPROACH_3_NAME}"
-      description: "{1-sentence summary}. Pro: {benefit}. Con: {drawback}"
-```
-
-Each approach should be meaningfully different, not minor variations.
+Propose 2-3 meaningfully different approaches with trade-offs (pro/con for each). Present via AskUserQuestion for selection. See references/question-flows.md for approach proposal format.
 
 ## Step 4: Iterate on Chosen Approach
 
-Refine the selected approach. Up to 3 iteration rounds.
-
-Each round:
-
-1. Identify the most uncertain or underspecified aspect
-2. Ask a targeted question via AskUserQuestion
-3. Incorporate the answer into the design
-
-After each round, offer:
-
-```yaml
-AskUserQuestion:
-  question: "How does this look?"
-  header: "Design Check"
-  options:
-    - label: "Looks good — write it up"
-      description: "Converge on this design and generate the doc"
-    - label: "Needs refinement"
-      description: "I have feedback or concerns to address"
-    - label: "Start over with different approach"
-      description: "Switch to a different approach from Step 3"
-```
-
-If "Looks good" is selected, proceed to Step 5. If "Start over" is selected, return to Step 3.
+Refine selected approach. Up to 3 rounds: identify uncertain aspects, ask targeted question, incorporate answer. After each round offer: write it up, needs refinement, or start over. See references/question-flows.md for iteration check.
 
 ## Step 5: Generate Design Doc
 
-Generate a slug from the feature name (lowercase, hyphenated, max 5 words).
+Generate slug (lowercase, hyphenated, max 5 words).
 
 ```bash
-mkdir -p docs/plans
+mkdir -p docs/plans/{SLUG}
 ```
 
-Create `docs/plans/{SLUG}-design.md` with:
+Create `docs/plans/{SLUG}/design.md`. Scale section depth to complexity — simple features get brief docs, complex systems get thorough ones.
 
-```markdown
-# Design: {TITLE}
+See references/design-doc-template.md for the full template including interface contracts.
 
-**Date:** {TODAY}
-**Status:** proposal
+## Step 6: Spec Self-Review
 
-## Overview
+Before presenting to user, automatically review the design doc:
 
-{ 2-3 sentence summary of the feature and chosen approach }
+1. **Placeholder scan** — search for `{`, `TODO`, `TBD`, `???`. Fix inline.
+2. **Internal consistency** — method names, data types, and component names used consistently throughout.
+3. **Scope check** — every section traces back to a stated goal. Remove scope creep.
+4. **Ambiguity check** — flag vague phrases ("as needed", "where appropriate", "etc.") and replace with specifics.
 
-## Goals
+Fix all issues inline. Do not present a doc with known defects.
 
-- { what this design achieves }
-- { measurable outcomes where possible }
+## Step 7: User Review Gate
 
-## Non-Goals
-
-- { explicitly out of scope items }
-- { things this design does NOT address }
-
-## Approach
-
-{ detailed description of the chosen approach }
-
-### Key Decisions
-
-- { decision 1 }: { rationale }
-- { decision 2 }: { rationale }
-
-## Trade-offs Considered
-
-| Option | Pros | Cons | Verdict |
-|--------|------|------|---------|
-| {APPROACH_1} | {pros} | {cons} | {chosen/rejected} |
-| {APPROACH_2} | {pros} | {cons} | {chosen/rejected} |
-
-## Open Questions
-
-- { unresolved question 1 }
-- { unresolved question 2 }
-```
-
-Keep design docs under 200 lines.
-
-## Step 6: Offer Next Steps
+Present the design doc and explicitly ask for approval:
 
 ```yaml
 AskUserQuestion:
-  question: "What would you like to do next?"
-  header: "Next Steps"
+  question: "Design doc written. Please review and approve before proceeding."
+  header: "Approval"
   options:
-    - label: "Create worktree"
-      description: "Set up isolated branch for this feature"
-    - label: "Create implementation plan"
-      description: "Decompose into tasks with 3-file persistence"
-    - label: "Done for now"
-      description: "Save design doc and stop here"
+    - label: "Approved"
+      description: "Design is solid, proceed to next steps"
+    - label: "Needs changes"
+      description: "I have feedback to incorporate"
+    - label: "Restart"
+      description: "Start over with a different approach"
 ```
 
-- "Create worktree" — load the `planner:worktrees` skill, passing the slug as branch name
-- "Create implementation plan" — load the `planner:planning` skill, passing the design doc path
-- "Done for now" — report design doc path and exit
+If "Needs changes": incorporate feedback, re-run self-review, present again.
+If "Restart": return to Step 3.
+
+## Step 8: Commit Design Doc
+
+After approval, commit the design doc to git:
+
+```bash
+git add docs/plans/{SLUG}/design.md
+```
+
+```bash
+git commit -m "docs(plans): add {SLUG} design doc"
+```
+
+## Step 9: Offer Next Steps
+
+Offer: create worktree (`planner:worktrees`), create implementation plan (`planner:planning`), or done. See references/question-flows.md for next steps format.
+
+The ONLY planning skill to invoke after brainstorming is `planner:planning`.
 
 ## Rules
 
 - One question at a time — never batch multiple questions
 - Never assume requirements — always confirm with the user
-- Design docs are proposals, not commitments — mark status as "proposal"
-- Keep design docs under 200 lines
+- Design docs are proposals until approved — mark status as "proposal", change to "approved" after gate
 - If an existing design doc covers the topic, surface it before starting fresh
 - Always offer concrete next steps at the end
+- HARD-GATE: No implementation, code, or scaffolding until design is approved
+- Design for isolation and clarity — well-bounded units with clear interfaces. You reason better about code you can hold in context at once.

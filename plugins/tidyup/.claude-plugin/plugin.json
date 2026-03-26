@@ -1,6 +1,6 @@
 {
   "name": "tidyup",
-  "version": "0.1.1",
+  "version": "0.1.1+g5e6dff8",
   "description": "Codebase cleanup and hygiene — dead code detection, duplication scan, staleness check, safe removal with archiving",
   "author": {
     "name": "Jugraj Singh",

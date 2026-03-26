@@ -1,6 +1,6 @@
 {
   "name": "planner",
-  "version": "0.1.1",
+  "version": "0.2.0+g3321a94",
   "description": "Design brainstorming, implementation planning with 3-file persistence, session recovery, handoff, and worktree isolation",
   "author": {
     "name": "Jugraj Singh",
