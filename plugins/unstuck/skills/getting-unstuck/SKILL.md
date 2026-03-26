@@ -7,8 +7,8 @@ allowed-tools:
   - Grep
   - Bash
   - Skill
-  - AskUserQuestion
   - WebSearch
+  - AskUserQuestion
 ---
 
 # Getting Unstuck
