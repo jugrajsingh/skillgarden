@@ -13,8 +13,8 @@ allowed-tools:
   - Bash(claude *)
   - Write
   - Edit
-  - AskUserQuestion
   - Skill
+  - AskUserQuestion
 ---
 
 # GrepAI Full Setup

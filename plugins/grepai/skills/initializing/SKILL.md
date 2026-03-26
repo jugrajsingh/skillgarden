@@ -7,8 +7,8 @@ allowed-tools:
   - Bash(grepai *)
   - Edit
   - Write
-  - AskUserQuestion
   - Skill
+  - AskUserQuestion
 ---
 
 # GrepAI Project Initialization
