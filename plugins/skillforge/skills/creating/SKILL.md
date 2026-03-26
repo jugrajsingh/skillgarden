@@ -5,9 +5,9 @@ allowed-tools:
   - Read
   - Write
   - Glob
-  - AskUserQuestion
   - Bash(ls *)
   - Bash(mkdir *)
+  - AskUserQuestion
 ---
 
 # Create a New Skill
