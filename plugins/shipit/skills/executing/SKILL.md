@@ -9,6 +9,8 @@ allowed-tools:
   - Grep
   - Bash
   - Task
+  - TaskCreate
+  - TaskUpdate
   - AskUserQuestion
 ---
 

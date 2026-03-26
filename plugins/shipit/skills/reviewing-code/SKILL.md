@@ -83,7 +83,7 @@ Derive a slug for the review report file name:
 
 ## Step 4: Dispatch Code-Reviewer Agent
 
-Create a Task agent (subagent_type: general-purpose) with code-reviewer instructions.
+Dispatch a Task agent with the code-reviewer prompt from this plugin's agents/code-reviewer.md.
 
 Provide the agent with:
 
