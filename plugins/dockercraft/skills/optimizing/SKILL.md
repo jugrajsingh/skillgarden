@@ -6,10 +6,10 @@ allowed-tools:
   - Write
   - Glob
   - Grep
-  - AskUserQuestion
   - Bash(docker images *)
   - Bash(docker inspect *)
   - Bash(docker history *)
+  - AskUserQuestion
 ---
 
 # Optimize Docker Images

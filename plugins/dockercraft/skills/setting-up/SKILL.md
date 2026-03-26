@@ -5,8 +5,8 @@ allowed-tools:
   - Read
   - Glob
   - Bash(docker *)
-  - AskUserQuestion
   - Skill
+  - AskUserQuestion
 ---
 
 # Docker Environment Setup (Orchestrator)

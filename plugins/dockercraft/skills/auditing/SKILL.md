@@ -5,8 +5,8 @@ allowed-tools:
   - Read
   - Glob
   - Grep
-  - AskUserQuestion
   - Task
+  - AskUserQuestion
 ---
 
 # Audit Docker Configuration
