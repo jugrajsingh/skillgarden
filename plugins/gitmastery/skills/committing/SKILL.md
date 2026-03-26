@@ -4,6 +4,7 @@ description: Create atomic git commits with conventional format. Hooks enforce n
 allowed-tools:
   - Bash(git *)
   - Bash(pre-commit *)
+  - Bash(ruff *)
   - Bash(pwd)
   - Bash(cd *)
   - Read
@@ -130,28 +131,76 @@ Tokens are refreshed in background to avoid request delays."
 
 ### 5. Pre-commit Handling
 
-| Exit Code | Action |
-|-----------|--------|
-| 0 | Proceed to commit |
-| Non-zero + files modified | Re-stage same files, retry (max 5 retries) |
-| Non-zero + error only | Show error, ask user via AskUserQuestion |
+When pre-commit fails, follow this priority order — **always prefer autofix tools over manual edits:**
 
-Auto-fixable (retry automatically): ruff-format, ruff, trailing-whitespace, end-of-file-fixer, mixed-line-ending
-
-Semi-automatic (agent fixes, no user action):
-
-- Bandit B904: Add `from e` to bare re-raises, re-stage, retry
-- Gitleaks in docs/comments: Replace with placeholder, re-stage, retry
-
-Retry loop (separate Bash calls):
-
-```bash
-git add file1.py file2.py    # Re-stage
-pre-commit run               # Retry
-# If pass → commit
+```text
+pre-commit fails
+    → hooks auto-fixed files? → re-stage, retry
+    → lint errors remain? → run autofix CLI tools
+    → still failing? → agent edits code
+    → still failing? → ask user
 ```
 
-If manual fix needed, present via AskUserQuestion:
+#### Tier 1: Hook Self-Fix (re-stage and retry)
+
+These hooks modify files automatically. Just re-stage and retry (max 5 retries):
+
+- ruff-format, trailing-whitespace, end-of-file-fixer, mixed-line-ending
+
+```bash
+git add file1.py file2.py    # Re-stage auto-fixed files
+```
+
+```bash
+pre-commit run               # Retry
+```
+
+#### Tier 2: Run Autofix CLI Tools
+
+When hooks report lint errors but don't auto-fix them, run the tool's autofix command **before** attempting manual edits:
+
+| Hook | Autofix Command | What It Fixes |
+|------|----------------|---------------|
+| ruff | `ruff check --fix <files>` | Safe fixes (F841, RUF022, I001, etc.) |
+| ruff | `ruff check --fix --unsafe-fixes <files>` | Unsafe fixes (E402, etc.) — use when safe didn't resolve |
+| codespell | `codespell --write-changes <files>` | Typos in code/comments |
+
+**Workflow** (separate Bash calls):
+
+```bash
+# Run safe fixes first
+ruff check --fix file1.py file2.py
+```
+
+```bash
+# If errors remain, try unsafe fixes
+ruff check --fix --unsafe-fixes file1.py file2.py
+```
+
+```bash
+# Re-stage and retry
+git add file1.py file2.py
+```
+
+```bash
+pre-commit run
+```
+
+**IMPORTANT:** Only pass the specific failing files to autofix commands, not the entire repo.
+
+#### Tier 3: Agent Edits Code
+
+When autofix tools can't resolve the error (e.g., actual logic issues, bandit findings), the agent fixes the code directly:
+
+- Bandit B904: Add `from e` to bare re-raises
+- Gitleaks in docs/comments: Replace with placeholder
+- E402 not resolved by `--unsafe-fixes`: Move imports to top of file manually
+
+Then re-stage and retry.
+
+#### Tier 4: Ask User
+
+If none of the above resolves it, present via AskUserQuestion:
 
 ```python
 AskUserQuestion(
@@ -172,6 +221,27 @@ How would you like to proceed?""",
     }]
 )
 ```
+
+#### Pre-commit Stash + mypy
+
+Pre-commit **stashes unstaged changes** before running hooks. If mypy is configured with `pass_filenames: false` and `always_run: true`, it scans the entire project against this stashed (incomplete) snapshot — unstaged files vanish, breaking imports.
+
+**Fix:** Configure the mypy hook with `pass_filenames: true` (no `always_run`). This way mypy only checks the staged files, not the whole project. The pysmith pre-commit template already uses this pattern.
+
+```yaml
+# CORRECT — checks only staged files, no stash conflict
+- id: mypy
+  entry: uv run mypy
+  pass_filenames: true
+
+# WRONG — scans everything against stashed snapshot
+- id: mypy
+  entry: uv run mypy .
+  pass_filenames: false
+  always_run: true
+```
+
+If you encounter this in an existing project, fix the `.pre-commit-config.yaml` rather than working around it with file moves or staging tricks.
 
 ### 6. Submodule Handling
 
