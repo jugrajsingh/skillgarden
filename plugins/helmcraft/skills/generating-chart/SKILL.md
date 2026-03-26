@@ -6,11 +6,11 @@ allowed-tools:
   - Write
   - Glob
   - Grep
-  - AskUserQuestion
   - Bash(helm create *)
   - Bash(pwd)
   - Bash(basename *)
   - Bash(rm -rf *)
+  - AskUserQuestion
 ---
 
 # Generate Helm Chart
